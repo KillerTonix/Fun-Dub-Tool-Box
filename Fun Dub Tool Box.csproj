@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <RootNamespace>Fun_Dub_Tool_Box</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Fonts\" />
+    <Folder Include="Materials\Images\" />
+    <Folder Include="Materials\Sounds\" />
+    <Folder Include="Utilities\Theme\" />
+    <PackageReference Include="FFMpegCore" Version="5.2.0" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
+	<Resource Include="Fonts\Nunito-VariableFont_wght.ttf" />
+	<Resource Include="Fonts\FiraSansCondensed-Bold.ttf" />
+	<Resource Include="Fonts\FiraSansCondensed-Regular.ttf" />
+	<Resource Include="Fonts\PTSansNarrow-Bold.ttf" />
+	<Resource Include="Fonts\PTSansNarrow-Regular.ttf" />
+  </ItemGroup>
+
+</Project>

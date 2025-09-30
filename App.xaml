@@ -1,0 +1,21 @@
+﻿<Application x:Class="Fun_Dub_Tool_Box.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Fun_Dub_Tool_Box"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemeResources />
+                <ui:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="Nunito">pack://application:,,,/Fonts/#Nunito-VariableFont_wght</FontFamily>
+            <FontFamily x:Key="FiraSansBold">pack://application:,,,/Fonts/#FiraSansCondensed-Bold</FontFamily>
+            <FontFamily x:Key="FiraSansRegular">pack://application:,,,/Fonts/#FiraSansCondensed-Regular</FontFamily>
+            <FontFamily x:Key="PTSansBold">pack://application:,,,/Fonts/#PTSansNarrow-Bold</FontFamily>
+            <FontFamily x:Key="PTSansRegular">pack://application:,,,/Fonts/#PTSansNarrow-Regular</FontFamily>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
