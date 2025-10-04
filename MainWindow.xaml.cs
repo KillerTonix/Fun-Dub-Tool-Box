@@ -58,13 +58,7 @@ namespace Fun_Dub_Tool_Box
             var positioningLogoWindow = new PositioningLogoWindow { Owner = this }; // Create a new instance and set the owner to the current window
             positioningLogoWindow.ShowDialog(); // Show window as a dialog
         }
-
-        private void MoreSettingsToggleButton_Checked(object sender, RoutedEventArgs e)
-        {
-            var additionalProjectSettingsWindow = new AdditionalProjectSettingsWindow { Owner = this }; // Create a new instance and set the owner to the current window
-            additionalProjectSettingsWindow.ShowDialog(); // Show window as a dialog
-        }
-
+  
         private void SeeQueueListButton_Click(object sender, RoutedEventArgs e)
         {
             var processingQueueWindow = new ProcessingQueueWindow { Owner = this }; // Create a new instance and set the owner to the current window
