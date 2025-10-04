@@ -49,8 +49,8 @@ namespace Fun_Dub_Tool_Box
 
         private void PresetConfigureButton_Click(object sender, RoutedEventArgs e)
         {
-            var presetConfigurationWindow = new PresetConfigurationWindow { Owner = this }; // Create a new instance and set the owner to the current window
-            presetConfigurationWindow.ShowDialog(); // Show window as a dialog
+            var editPresetWindow = new EditPresetWindow { Owner = this }; // Create a new instance and set the owner to the current window
+            editPresetWindow.ShowDialog(); // Show window as a dialog
         }
 
         private void LogoSetManualToggleButton_Checked(object sender, RoutedEventArgs e)

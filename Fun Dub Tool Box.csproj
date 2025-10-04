@@ -10,12 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="CheckerBackgroundImage.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Fonts\" />
-    <Folder Include="Materials\Images\" />
     <Folder Include="Materials\Sounds\" />
     <Folder Include="Utilities\Theme\" />
     <PackageReference Include="FFMpegCore" Version="5.2.0" />
     <PackageReference Include="ModernWpfUI" Version="0.9.6" />
+    <Resource Include="Materials\Images\CheckerBackgroundImage.jpg" />
 	<Resource Include="Fonts\Nunito-VariableFont_wght.ttf" />
 	<Resource Include="Fonts\FiraSansCondensed-Bold.ttf" />
 	<Resource Include="Fonts\FiraSansCondensed-Regular.ttf" />

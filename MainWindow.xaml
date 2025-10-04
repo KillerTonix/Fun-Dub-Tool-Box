@@ -158,7 +158,7 @@
                             <TextBlock x:Name="MaterialsListTextBlock" Text="Materials List" FontSize="24" FontWeight="Bold" Foreground="#FFD0D0D0" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
                         </Border>
 
-                        <ListView x:Name="MaterialsListView" FontFamily="PTSansRegular" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  ItemsSource="{Binding MaterialsData}" Background="#FF333333" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,30,0,0" Foreground="White" AllowDrop="True" MouseDoubleClick="MaterialsListView_MouseDoubleClick">
+                        <ListView x:Name="MaterialsListView" FontFamily="PTSansRegular" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  ItemsSource="{Binding MaterialsData}" Background="#FF333333" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,30,0,0" Foreground="White" AllowDrop="True" MouseDoubleClick="MaterialsListView_MouseDoubleClick" BorderThickness="0,0,0,2" BorderBrush="#FFD0D0D0">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn x:Name="TypeHeader"  Header="Type" DisplayMemberBinding="{Binding MaterialType}"/>
@@ -222,7 +222,9 @@
                                                 <TextBlock x:Name="PresetEditTextBlock" Text="Edit Preset" FontFamily="PTSansBold" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
                                             </Grid>
                                         </Button>
-                                    </Grid>
+                                        <Border Grid.ColumnSpan="2" BorderBrush="#FF878787" BorderThickness="0,0,0,2"/>
+
+                                    </Grid>                                    
                                 </Grid>
 
 
@@ -300,6 +302,7 @@
                                                 </Grid>
                                             </ToggleButton>
                                         </StackPanel>
+                                        <Border Grid.ColumnSpan="3" BorderBrush="#FF878787" BorderThickness="0,0,0,2"/>
                                     </Grid>
                                 </Grid>
 
@@ -314,11 +317,14 @@
                                             <CheckBox x:Name="ExportToSourceFolderCheckBox" Content="Export To Source Folder" FontWeight="Light" Foreground="White" FontFamily="PTSansRegular" Margin="10,10,0,0" HorizontalAlignment="Left" BorderBrush="{x:Null}" Background="White"/>
                                             <CheckBox x:Name="OpenFolderAfterExportCheckBox" Content="Open Folder After Export" FontWeight="Light" Foreground="White" FontFamily="PTSansRegular" Margin="10,0,0,0" HorizontalAlignment="Left" BorderBrush="{x:Null}" Background="White"/>
                                         </StackPanel>
+                                        <Border  BorderBrush="#FF878787" BorderThickness="0,0,0,2"/>
                                     </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
+                    <Border  BorderBrush="#FFD0D0D0" BorderThickness="0,0,0,2"/>
+
                 </Grid>
 
                 <Grid Grid.Row="2">
@@ -349,6 +355,8 @@
                             </Button>
                         </Grid>
                     </Grid>
+                    <Border  BorderBrush="#FFD0D0D0" BorderThickness="0,0,0,2"/>
+
                 </Grid>
 
                 <Grid Grid.Row="3">
