@@ -104,7 +104,7 @@
                     <Button x:Name="SettingsButton" BorderThickness="0" Background="#FF333333" Foreground="White" HorizontalAlignment="Center" BorderBrush="{x:Null}" Click="SettingsButton_Click">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe713;" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                     </Button>
-                    <Button x:Name="AboutButton" BorderThickness="0"  Background="#FF333333" Foreground="White" HorizontalAlignment="Right" BorderBrush="{x:Null}">
+                    <Button x:Name="AboutButton" BorderThickness="0"  Background="#FF333333" Foreground="White" HorizontalAlignment="Right" BorderBrush="{x:Null}" Click="AboutButton_Click">
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe946;" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" Padding="0,1,0,0" />
                     </Button>
                 </Grid>
@@ -167,97 +167,36 @@
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="0">
+                                <Grid Grid.Row="0" Grid.ColumnSpan="2" >
                                     <Border Background="#FF4D4D4D" Margin="10" VerticalAlignment="Top" Grid.Row="0" Height="30">
-                                        <TextBlock x:Name="VideoProjectSettingsTextBlock" Text="Video" FontSize="24" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
+                                        <TextBlock x:Name="PresetTextBlock" Text="Preset" FontSize="20" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
                                     <Grid Margin="10,40,10,0" Background="#7F000000">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="1*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
-                                            <Label x:Name="VideoBitrateLabel" Content="Bitrate"  FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ComboBox Name="VideoBitrateComboBox" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF333333" Foreground="White" Margin="0,15,0,0">
-                                                <ComboBoxItem Content="Source"/>
-                                                <ComboBoxItem Content="1000 kbps"/>
-                                                <ComboBoxItem Content="2000 kbps"/>
-                                                <ComboBoxItem Content="3000 kbps"/>
-                                            </ComboBox>
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="5">
-                                            <Label x:Name="VideoResolutionLabel" Content="Resolution" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ComboBox Name="VideoResolutionComboBox" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF333333" Foreground="White" Margin="0,15,0,0">
-                                                <ComboBoxItem Content="Source"/>
-                                                <ComboBoxItem Content="1920x1080"/>
-                                                <ComboBoxItem Content="1280x720"/>
-                                                <ComboBoxItem Content="640x480"/>
-                                            </ComboBox>
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="5">
-                                            <Label x:Name="VideoFrameRateLabel" Content="Frame Rate"  FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ComboBox Name="VideoFrameRateComboBox" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF333333" Foreground="White" Margin="0,15,0,0">
-                                                <ComboBoxItem Content="Source"/>
-                                                <ComboBoxItem Content="24 fps"/>
-                                                <ComboBoxItem Content="30 fps"/>
-                                                <ComboBoxItem Content="60 fps"/>
-                                            </ComboBox>
-                                        </StackPanel>
-                                    </Grid>
-                                </Grid>
-
-
-                                <Grid Grid.Row="0" Grid.Column="1">
-                                    <Border Background="#FF4D4D4D" Margin="10" VerticalAlignment="Top" Grid.Row="0" Height="30">
-                                        <TextBlock x:Name="AudioProjectSettingsTextBlock" Text="Audio" FontSize="24" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                    </Border>
-                                    <Grid Margin="10,40,10,0" Background="#7F000000">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="3*"/>
                                             <ColumnDefinition Width="1*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
-                                            <Label x:Name="AudioBitrateLabel" Content="AudioBitrate" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ComboBox Name="AudioBitrateComboBox" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF333333" Foreground="White" Margin="0,15,0,0">
-                                                <ComboBoxItem Content="Source"/>
-                                                <ComboBoxItem Content="128 kbps"/>
-                                                <ComboBoxItem Content="192 kbps"/>
-                                                <ComboBoxItem Content="256 kbps"/>
-                                            </ComboBox>
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="5">
-                                            <Label x:Name="AudioCodecLabel" Content="Codec" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ComboBox Name="AudioCodecComboBox" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF333333" Foreground="White" Margin="0,15,0,0">
-                                                <ComboBoxItem Content="Source"/>
-                                                <ComboBoxItem Content="AAC"/>
-                                                <ComboBoxItem Content="MP3"/>
-                                                <ComboBoxItem Content="WAV"/>
-                                            </ComboBox>
-                                        </StackPanel>
-
-                                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="5">
-                                            <Label x:Name="AudioSamplingRateLabel" Content="Sampling Rate" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ComboBox Name="AudioSamplingRateComboBox" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#FF333333" Foreground="White" Margin="0,15,0,0">
-                                                <ComboBoxItem Content="Source"/>
-                                                <ComboBoxItem Content="44100 Hz"/>
-                                                <ComboBoxItem Content="48000 Hz"/>
-                                                <ComboBoxItem Content="96000 Hz"/>
-                                            </ComboBox>
-                                        </StackPanel>
+                                        <ComboBox Name="PresetComboBox" Grid.Column="0" FontFamily="Nunito" FontSize="14"  Background="#FF333333" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,10,0" >
+                                            <ComboBoxItem Content="Source"/>
+                                            <ComboBoxItem Content="1080p, H265 codec"/>
+                                            <ComboBoxItem Content="1080p, H264 codec"/>
+                                            <ComboBoxItem Content="720p H265 codec"/>
+                                            <ComboBoxItem Content="720p H264 codec"/>
+                                        </ComboBox>
+                                        <Button x:Name="PresetConfigureButton" Grid.Column="1" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch" Margin="10,0,10,0" Click="PresetConfigureButton_Click">
+                                            <Grid Width="Auto">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xef58;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                                <TextBlock x:Name="ProfileConfigureTextBlock" Text="Configure" FontFamily="PTSansBold" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
+                                            </Grid>
+                                        </Button>
                                     </Grid>
                                 </Grid>
 
 
                                 <Grid Grid.Row="1" Grid.Column="0">
                                     <Border Background="#FF4D4D4D" Margin="10" VerticalAlignment="Top" Grid.Row="0" Height="30">
-                                        <TextBlock x:Name="LogoProjectSettingsTextBlock" Text="Logo" FontSize="24" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
+                                        <TextBlock x:Name="LogoProjectSettingsTextBlock" Text="Logo" FontSize="20" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
                                     <Grid Margin="10,40,10,10" Background="#7F000000">
                                         <Grid.ColumnDefinitions>
@@ -320,9 +259,9 @@
                                             <TextBox Name="LogoTransparencyTextBox" Text="100%" Margin="0,10,0,0" Background="#FF333333" Foreground="White" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                                         </StackPanel>
 
-                                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="5">
+                                        <StackPanel Orientation="Vertical" Grid.Column="2" Margin="5,5,10,5">
                                             <Label x:Name="LogoManualSettingsLabel" Content="Manual settings" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <ToggleButton x:Name="LogoSetManualToggleButton" Margin="0,10,0,0" Background="#FF555555" Foreground="White" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <ToggleButton x:Name="LogoSetManualToggleButton" Margin="0,10,0,0" Background="#FF555555" Foreground="White" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Checked="LogoSetManualToggleButton_Checked">
                                                 <Grid Width="Auto">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe7c5;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                     <TextBlock x:Name="SetManualTextBlock" Text="Set Manual" FontSize="13" FontFamily="PTSansBold" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
@@ -335,7 +274,7 @@
 
                                 <Grid Grid.Row="1" Grid.Column="1" >
                                     <Border Background="#FF4D4D4D" Grid.ColumnSpan="2" Margin="10" VerticalAlignment="Top" Grid.Row="0" Height="30">
-                                        <TextBlock Text="Additional" FontSize="24" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Additional" FontSize="20" FontWeight="Bold" Foreground="White" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                     </Border>
 
                                     <Grid Margin="10,40,10,10" Background="#7F000000">
@@ -349,7 +288,7 @@
                                             <CheckBox x:Name="OpenFolderAfterExportCheckBox" Content="Open Folder After Export" FontWeight="Light" Foreground="White" FontFamily="PTSansRegular" Margin="10,0,0,0" HorizontalAlignment="Left" BorderBrush="{x:Null}" Background="White"/>
                                         </StackPanel>
 
-                                        <ToggleButton x:Name="MoreSettingsToggleButton" Grid.Column="1" Margin="0,10,5,0" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch">
+                                        <ToggleButton x:Name="MoreSettingsToggleButton" Grid.Column="1" Margin="0,10,10,0" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch" Checked="MoreSettingsToggleButton_Checked">
                                             <Grid Width="Auto">
                                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xef58;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                 <TextBlock x:Name="MoreSettingsTextBlock" Text="More Settings" FontFamily="PTSansBold" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
@@ -371,23 +310,24 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,0,0,0">
-                            <Button x:Name="AddToQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Left" BorderBrush="{x:Null}" Margin="10,0,0,0">
-                                <Grid Width="Auto">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe710;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                    <TextBlock x:Name="AddToQueueTextBlock" FontFamily="Nunito Black" Text="Add To Queue" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
-                                </Grid>
-                            </Button>
 
-                            <Button x:Name="SeeQueueListButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Left" BorderBrush="{x:Null}" Margin="10,0,0,0">
+                        <Button x:Name="AddToQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Left" BorderBrush="{x:Null}" Margin="10,0,0,0">
+                            <Grid Width="Auto">
+                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe710;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                <TextBlock x:Name="AddToQueueTextBlock" FontFamily="Nunito Black" Text="Add To Queue" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Label x:Name="ItemsInQueueLabel" Grid.ColumnSpan="2" Content="Items in queue: 0" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                        <Grid Grid.Column="1" VerticalAlignment="Center" Margin="0,0,0,0">
+                            <Button x:Name="SeeQueueListButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Right" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0" Click="SeeQueueListButton_Click">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE8FD;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                     <TextBlock x:Name="SeeQueueListTextBlock" FontFamily="Nunito Black" Text="See Queue List" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
                                 </Grid>
                             </Button>
-                        </StackPanel>
-
+                        </Grid>
                     </Grid>
                 </Grid>
 

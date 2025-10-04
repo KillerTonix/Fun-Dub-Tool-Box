@@ -4,7 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Fun_Dub_Tool_Box"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        xmlns:controls="clr-namespace:ModernWpf.Controls;assembly=ModernWpf.Controls"
         mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        WindowState="Normal"
+        WindowStartupLocation="CenterScreen"
         Title="ApplicationSettingsWindow" Height="450" Width="800">
     <Grid>
         <Label Content="Application Settings" FontSize="60"/>
