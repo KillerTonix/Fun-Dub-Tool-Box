@@ -70,5 +70,10 @@ namespace Fun_Dub_Tool_Box
             var processingQueueWindow = new ProcessingQueueWindow { Owner = this }; // Create a new instance and set the owner to the current window
             processingQueueWindow.ShowDialog(); // Show window as a dialog
         }
+
+        private void MaterialsListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
