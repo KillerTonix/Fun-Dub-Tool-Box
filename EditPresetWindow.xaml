@@ -5,31 +5,35 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Fun_Dub_Tool_Box"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         ui:WindowHelper.UseModernWindowStyle="True"
         xmlns:controls="clr-namespace:ModernWpf.Controls;assembly=ModernWpf.Controls"        
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded" PreviewKeyDown="Window_PreviewKeyDown"
         Title="EditPresetWindow" Height="450" Width="800">
     <Grid Background="#FF1F1F1F" >
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.5*"/>
             <RowDefinition Height="3*"/>
+            <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <Grid>
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ComboBox Grid.Row="0" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="NaN">
+
+            <ComboBox x:Name="PresetNameCmb" Grid.Row="0" IsEditable="True" Grid.Column="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="NaN">
                 <ComboBoxItem Content="Preset 1"/>
                 <ComboBoxItem Content="Preset 2"/>
                 <ComboBoxItem Content="Preset 3"/>
             </ComboBox>
             <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" >
-                <Button Content="💾 Save" Width="100" Margin="10"/>
-                <Button Content="❌Delete" Width="100" Margin="10"/>
+                <Button Content="💾 Save" Width="100" Margin="10" Click="Save_Click"/>
+                <Button Content="❌Delete" Width="100" Margin="10" Click="Delete_Click"/>
             </StackPanel>
         </Grid>
         
@@ -37,17 +41,94 @@
         <Grid Grid.Row="1" Margin="10">
             <TabControl>
                 <TabItem Header="🎞 Video">
-                    <Grid Background="#7F000000">
-                        <Label Content="Video Settings (will filled in the future)" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
-                    </Grid>
+                    <StackPanel Orientation="Vertical" Background="#FF333333">
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Resolution" Width="90" VerticalAlignment="Center"/>
+                            <TextBox x:Name="V_Width" Width="120" Text="1920" Margin="0,0,6,0"/>
+                            <TextBlock Text="x" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBox x:Name="V_Height" Width="120" Text="1080"/>
+                            <TextBlock Text="FPS" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="V_Fps" Width="120" Text="30"/>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Codec" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="V_Codec" Width="120"/>
+                            <TextBlock Text="PixelFmt" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="V_PixFmt" Width="120"/>
+                            <TextBlock Text="Hardware" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="V_Hw" Width="150"/>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Rate Ctrl" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="V_Rate" Width="120"  SelectionChanged="V_Rate_SelectionChanged"/>
+                            <StackPanel Orientation="Horizontal" x:Name="CRFPanel" Margin="20,0,0,0">
+                                <TextBlock Text="CRF" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <Slider x:Name="V_CRF" Width="160" Minimum="0" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                                <TextBlock x:Name="V_CRFVal" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" x:Name="BitratePanel" Margin="20,0,0,0" Visibility="Collapsed">
+                                <TextBlock Text="Bitrate (kbps)" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBox x:Name="V_Bitrate" Width="90" Text="8000"/>
+                                <CheckBox x:Name="V_TwoPass" Content="Two-pass" Margin="12,0,0,0"/>
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Profile" Width="90" VerticalAlignment="Center"/>
+                            <TextBox x:Name="V_Profile" Width="120" Text="auto"/>
+                            <TextBlock Text="Level" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="V_Level" Width="120" Text="auto"/>
+                            <CheckBox x:Name="V_FullRange" Content="Full color range" Margin="20,0,0,0"/>
+                        </WrapPanel>
+                    </StackPanel>
                 </TabItem>
                 <TabItem Header="🔊 Audio">
-                    <Grid Background="#7F000000"/>
+                    <StackPanel Background="#FF333333">
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Codec" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="A_Codec" Width="120"/>
+                            <TextBlock Text="Bitrate (kbps)" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="A_Bitrate" Width="120" Text="192"/>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Sample Rate" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="A_Sample" Width="120"/>
+                            <TextBlock Text="Channels" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="A_Channels" Width="120"/>
+                        </WrapPanel>
+
+                        <WrapPanel Margin="10">
+                            <CheckBox x:Name="A_Normalize" Content="Loudness normalize" IsChecked="True"/>
+                            <TextBlock Text="Target (LUFS)" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="A_Lufs" Width="90" Text="-14"/>
+                            <TextBlock Text="True Peak (dB)" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="A_TP" Width="90" Text="-1.5"/>
+                            <TextBlock Text="LRA" Margin="20,0,6,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="A_Lra" Width="90" Text="11"/>
+                        </WrapPanel>
+                    </StackPanel>
+
                 </TabItem>
                 <TabItem Header="⚙️ General">
-                    <Grid Background="#7F000000"/>
+                    <StackPanel Background="#FF333333">
+                        <WrapPanel Margin="10">
+                            <TextBlock Text="Container" Width="90" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="G_Container" Width="120"/>
+                            <CheckBox x:Name="G_FastStart" Content="Fast start (mp4)" Margin="20,0,0,0" IsChecked="True"/>
+                        </WrapPanel>
+                        <TextBlock Text="File name pattern" Margin="10"/>
+                        <TextBox x:Name="G_FilePattern" Text="{x:Static sys:String.Empty}"/>
+                    </StackPanel>
                 </TabItem>
-            </TabControl>
+            </TabControl>          
         </Grid>
+        
+        <!-- Summary -->
+        <TextBlock Grid.Row="2" Margin="10,0,10,10" Opacity="0.75" x:Name="SummaryTxt"
+         Text="Summary will appear here"/>
+        
     </Grid>
 </Window>

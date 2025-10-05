@@ -6,6 +6,7 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+            
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources />
                 <ui:XamlControlsResources />
@@ -16,6 +17,7 @@
             <FontFamily x:Key="FiraSansRegular">pack://application:,,,/Fonts/#FiraSansCondensed-Regular</FontFamily>
             <FontFamily x:Key="PTSansBold">pack://application:,,,/Fonts/#PTSansNarrow-Bold</FontFamily>
             <FontFamily x:Key="PTSansRegular">pack://application:,,,/Fonts/#PTSansNarrow-Regular</FontFamily>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
