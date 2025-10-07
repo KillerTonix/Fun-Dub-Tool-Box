@@ -31,7 +31,7 @@
             </Border>
 
             <StackPanel Grid.Column="0" Margin="0,40,0,0">
-                <ToggleButton x:Name="AddIntroToggleButton" Margin="10" Padding="10" Background="#FF333333" FontFamily="Nunito Black" Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddIntroToggleButton_Checked">
+                <ToggleButton x:Name="AddIntroToggleButton" Margin="10" Padding="10" Background="#FF333333" FontFamily="Nunito Black" Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddIntroToggleButton_Checked" Unchecked="AddIntroToggleButton_Unchecked">
                     <ToggleButton.ToolTip>
                         <ToolTip Content="Intro – clip that plays before main video" FontFamily="PTSansRegular" FontSize="14" />
                     </ToggleButton.ToolTip>
@@ -40,7 +40,7 @@
                         <TextBlock x:Name="IntroTextBlock" Text="INTRO" FontSize="25" HorizontalAlignment="Center" Margin="35,0,0,0" TextAlignment="Center"/>
                     </Grid>
                 </ToggleButton>
-                <ToggleButton x:Name="AddVideoToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60">
+                <ToggleButton x:Name="AddVideoToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddVideoToggleButton_Checked" Unchecked="AddVideoToggleButton_Unchecked">
                     <ToggleButton.ToolTip>
                         <ToolTip Content="Video - main video content" FontFamily="PTSansRegular" FontSize="14" />
                     </ToggleButton.ToolTip>
@@ -49,7 +49,7 @@
                         <TextBlock x:Name="VideoTextBlock" Text="VIDEO" FontSize="25" HorizontalAlignment="Center" Margin="35,0,0,0" TextAlignment="Center"/>
                     </Grid>
                 </ToggleButton>
-                <ToggleButton x:Name="AddLogoToggleButton"  Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60">
+                <ToggleButton x:Name="AddLogoToggleButton"  Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddLogoToggleButton_Checked" Unchecked="AddLogoToggleButton_Unchecked">
                     <ToggleButton.ToolTip>
                         <ToolTip Content="Logo - logotype or watermark which overlay" FontFamily="PTSansRegular" FontSize="14" />
                     </ToggleButton.ToolTip>
@@ -58,7 +58,7 @@
                         <TextBlock x:Name="LogoTextBlock" Text="LOGO" FontSize="25" HorizontalAlignment="Center" Margin="35,0,0,0" TextAlignment="Center"/>
                     </Grid>
                 </ToggleButton>
-                <ToggleButton x:Name="AddSubtitlesToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60">
+                <ToggleButton x:Name="AddSubtitlesToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddSubtitlesToggleButton_Checked" Unchecked="AddSubtitlesToggleButton_Unchecked">
                     <ToggleButton.ToolTip>
                         <ToolTip Content="Subtitle - subtitle file (.srt/.ass/.vtt)" FontFamily="PTSansRegular" FontSize="14" />
                     </ToggleButton.ToolTip>
@@ -67,7 +67,7 @@
                         <TextBlock x:Name="SubtitlesTextBlock" FontSize="25" HorizontalAlignment="Center" Margin="35,0,0,0" TextAlignment="Center" Text="SUBTITLES"/>
                     </Grid>
                 </ToggleButton>
-                <ToggleButton x:Name="AddAuidioToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60">
+                <ToggleButton x:Name="AddAuidioToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddAuidioToggleButton_Checked" Unchecked="AddAuidioToggleButton_Unchecked">
                     <ToggleButton.ToolTip>
                         <ToolTip Content="Audio - audio file which will replace audoio of main video" FontFamily="PTSansRegular" FontSize="14" />
                     </ToggleButton.ToolTip>
@@ -76,7 +76,7 @@
                         <TextBlock x:Name="AudioTextBlock" Text="AUDIO" FontSize="25" HorizontalAlignment="Center" Margin="35,0,0,0" TextAlignment="Center"/>
                     </Grid>
                 </ToggleButton>
-                <ToggleButton x:Name="AddOutroToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60">
+                <ToggleButton x:Name="AddOutroToggleButton" Margin="10" Padding="10" Background="#FF333333"  FontFamily="Nunito Black"  Foreground="White" BorderBrush="{x:Null}" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Height="60" Checked="AddOutroToggleButton_Checked" Unchecked="AddOutroToggleButton_Unchecked">
                     <ToggleButton.ToolTip>
                         <ToolTip Content="Outro - clip that plays after main video" FontFamily="PTSansRegular" FontSize="14" />
                     </ToggleButton.ToolTip>
@@ -158,27 +158,33 @@
                             <TextBlock x:Name="MaterialsListTextBlock" Text="Materials List" FontSize="24" FontWeight="Bold" Foreground="#FFD0D0D0" FontFamily="FiraSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
                         </Border>
 
-                        <ListView x:Name="MaterialsListView" FontFamily="PTSansRegular" Grid.Row="1" d:ItemsSource="{d:SampleData ItemCount=5}"  ItemsSource="{Binding MaterialsData}" Background="#FF333333" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="0,30,0,0" Foreground="White" AllowDrop="True" MouseDoubleClick="MaterialsListView_MouseDoubleClick" BorderThickness="0,0,0,2" BorderBrush="#FFD0D0D0">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn x:Name="TypeHeader"  Header="Type" DisplayMemberBinding="{Binding MaterialType}"/>
+                        <DataGrid x:Name="MaterialsGrid" Background="#FF333333" Margin="0,30,0,0" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single"
+                            MouseDoubleClick="MaterialsGrid_MouseDoubleClick" BorderThickness="0,0,0,2" BorderBrush="#FFD0D0D0" AllowDrop="True" DragOver="MaterialsGrid_DragOver" Drop="MaterialsGrid_Drop">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Open" Click="Ctx_Open_Click"/>
+                                    <MenuItem Header="Reveal in Explorer" Click="Ctx_Reveal_Click"/>
+                                    <Separator/>
+                                    <MenuItem Header="Replace..." Click="Ctx_Replace_Click"/>
+                                    <MenuItem Header="Remove" Click="Ctx_Remove_Click"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
 
-                                    <GridViewColumn x:Name="FilePathHeader" Header="Path" DisplayMemberBinding="{Binding MaterialPath}"/>
-                                    <GridViewColumn x:Name="DurationHeader" Header="Duration" DisplayMemberBinding="{Binding Duration}"/>
-                                    <GridViewColumn x:Name="ResolutionHeader" Header="Resolution" DisplayMemberBinding="{Binding Resolution}"/>
-
-                                    <GridViewColumn x:Name="DeleteHeader" Header="Delete">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button x:Name="DeleteMaterialButton" BorderThickness="0" Background="#FF333333"  HorizontalAlignment="Left" BorderBrush="{x:Null}" Click="DeleteMaterialButton_Click">
-                                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe74d;" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                                </Button>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="#" Binding="{Binding Index}" Width="40"/>
+                                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
+                                <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="*"/>
+                                <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="120"/>
+                                <DataGridTextColumn Header="Resolution" Binding="{Binding Resolution}" Width="140"/>
+                                <DataGridTemplateColumn Header="Delete" Width="70">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="✖" Width="38" Click="DeleteRow_Click"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </Grid>
                 </Grid>
 
@@ -360,7 +366,7 @@
                 </Grid>
 
                 <Grid Grid.Row="3">
-                    <Button x:Name="StartButton" Background="#FF107C10" Width="200" FontFamily="Nunito Black" Foreground="White" HorizontalAlignment="Center" BorderBrush="{x:Null}" Margin="0,0,10,0" VerticalAlignment="Center" HorizontalContentAlignment="Center" Padding="0,0,0,0">
+                    <Button x:Name="StartButton" Background="#FF107C10" Width="200" FontFamily="Nunito Black" Foreground="White" HorizontalAlignment="Center" BorderBrush="{x:Null}" Margin="0,0,10,0" VerticalAlignment="Center" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="StartButton_Click">
                         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                             <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xEDB5;" FontSize="25" VerticalAlignment="Center" HorizontalAlignment="Left" />
                             <TextBlock x:Name="StartTextBlock" FontFamily="Nunito Black" Text="Start" FontSize="28" HorizontalAlignment="Center" Margin="30,0,0,0" TextAlignment="Center" VerticalAlignment="Center"/>
