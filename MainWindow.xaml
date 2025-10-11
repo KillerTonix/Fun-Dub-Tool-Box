@@ -215,14 +215,8 @@
                                             <ColumnDefinition Width="1*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <ComboBox Name="PresetComboBox" Grid.Column="0" FontFamily="Nunito" FontSize="14"  Background="#FF333333" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,10,0" >
-                                            <ComboBoxItem Content="Source"/>
-                                            <ComboBoxItem Content="1920x1080 • H.265 • 30fps • CRF 20 • Stereo"/>
-                                            <ComboBoxItem Content="1080p, H264 codec"/>
-                                            <ComboBoxItem Content="720p H265 codec"/>
-                                            <ComboBoxItem Content="720p H264 codec"/>
-                                        </ComboBox>
-                                        <Button x:Name="PresetEditButton" Grid.Column="1" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch" Margin="10,0,10,0" Click="PresetConfigureButton_Click">
+                                        <ComboBox Name="PresetComboBox" Grid.Column="0" FontFamily="Nunito" FontSize="14"  Background="#FF333333" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,10,0"
+                                                  ItemsSource="{Binding PresetNames}" SelectedItem="{Binding SelectedPresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>                   <Button x:Name="PresetEditButton" Grid.Column="1" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch" Margin="10,0,10,0" Click="PresetConfigureButton_Click">
                                             <Grid Width="Auto">
                                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xef58;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                 <TextBlock x:Name="PresetEditTextBlock" Text="Edit Preset" FontFamily="PTSansBold" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>

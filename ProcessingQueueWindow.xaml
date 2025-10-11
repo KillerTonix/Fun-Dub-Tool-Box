@@ -26,29 +26,29 @@
 
                     <Grid Grid.Row="0" Background="#FF1F1F1F">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
-                            <Button x:Name="AddToQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10">
+                            <Button x:Name="AddToQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10" Click="AddToQueueButton_Click">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe710;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
                             </Button>
-                            <Button x:Name="RemoveFromQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10">
+                            <Button x:Name="RemoveFromQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10" Click="RemoveFromQueueButton_Click">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE738;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
                             </Button>
-                            <Button x:Name="EditeSelectedQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10">
+                            <Button x:Name="EditeSelectedQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10" Click="EditSelectedQueueButton_Click">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE70F;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
                             </Button>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,10,0">
-                            <Button x:Name="StartProcessingButton"  Background="#FF107C10" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="80" Margin="10,10,30,10">
+                            <Button x:Name="StartProcessingButton"  Background="#FF107C10" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="80" Margin="10,10,30,10" Click="StartProcessingButton_Click">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE768;" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
                             </Button>
-                            <Button x:Name="ClearQueueButton" Background="#FF7D1515" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="30" Margin="10" Padding="5,5,5,5">
+                            <Button x:Name="ClearQueueButton" Background="#FF7D1515" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="30" Margin="10" Padding="5,5,5,5" Click="ClearQueueButton_Click">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE74D;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
@@ -57,28 +57,26 @@
                     </Grid>
 
                     <!-- In your Queue window DataGrid -->
-                    <DataGrid x:Name="QueueGrid" Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" AutoGenerateColumns="False" Background="#FF333333" FontFamily="PTSansRegular"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" CanUserAddRows="False" IsReadOnly="False"  CellEditEnding="QueueGrid_CellEditEnding">
+                    <DataGrid x:Name="QueueGrid" Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" AutoGenerateColumns="False" Background="#FF333333" FontFamily="PTSansRegular"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" CanUserAddRows="False" IsReadOnly="False"  CellEditEnding="QueueGrid_CellEditEnding" SelectionChanged="QueueGrid_SelectionChanged" ItemsSource="{Binding SequenceData}">
                         <DataGridTextColumn Header="#" Binding="{Binding SequenceID}" Width="*" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Preset" Binding="{Binding SequenceFileName}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="File" Binding="{Binding SequenceFileName}" Width="*" IsReadOnly="True" />
+                        <DataGridTemplateColumn Header="Preset" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding DataContext.AvailablePresets, RelativeSource={RelativeSource AncestorType=Window}}"
+                                              SelectedItem="{Binding PresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              Background="#FF333333" Foreground="White"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Output File" Binding="{Binding OutputPath, UpdateSourceTrigger=PropertyChanged}" Width="*" IsReadOnly="False" />
-                        <DataGridTextColumn Header="Status" Binding="{Binding OutputPath}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="*" IsReadOnly="True" />
                     </DataGrid>
 
 
-                    <ListView Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" x:Name="SequentialProcessingListView" Background="#FF333333" FontFamily="PTSansRegular" ItemsSource="{Binding SequenceData}"  d:ItemsSource="{d:SampleData ItemCount=5}"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Foreground="White" >
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn x:Name="NumberHeader" Header="#" DisplayMemberBinding="{Binding SequenceID}"/>
-                                <GridViewColumn x:Name="PresetHeader" Header="Preset" DisplayMemberBinding="{Binding SequenceFileName}"/>
-                                <GridViewColumn x:Name="OutputFileHeader" Header="Output File" DisplayMemberBinding="{Binding SequenceFilePath}"/>
-                                <GridViewColumn x:Name="StatusHeader" Header="Status" DisplayMemberBinding="{Binding SequenceFilePath}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
                     <Grid Grid.Row="2" Background="#FF333333">
                         <Border BorderBrush="#FFD0D0D0" BorderThickness="0,0,0,2"></Border>
-                        <CheckBox x:Name="AutomaticShutdownPC" Content="Shutdown PC when the queue is finished" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <CheckBox x:Name="AutomaticShutdownPC" Content="Shutdown PC when the queue is finished" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Checked="AutomaticShutdownPC_Checked" Unchecked="AutomaticShutdownPC_Unchecked"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Label Content="Rendering by:" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
                             <ComboBox x:Name="RenderingEngineComboBox" Grid.Row="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="250">

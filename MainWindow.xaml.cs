@@ -1,11 +1,13 @@
 ﻿using FFMpegCore;
+using Fun_Dub_Tool_Box.Utilities;
 using Fun_Dub_Tool_Box.Utilities.Collections;
 using ModernWpf;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -14,10 +16,33 @@ namespace Fun_Dub_Tool_Box
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly ObservableCollection<MaterialItem> _materials = [];
+        public ObservableCollection<string> PresetNames { get; } = new();
+        private string? _selectedPresetName;
+        private bool _isReloadingPresets;
 
+        public string? SelectedPresetName
+        {
+            get => _selectedPresetName;
+            set
+            {
+                if (string.Equals(_selectedPresetName, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _selectedPresetName = value;
+
+                if (_isReloadingPresets)
+                {
+                    return;
+                }
+
+                OnPropertyChanged();
+            }
+        }
 
         public MainWindow()
         {
@@ -26,11 +51,47 @@ namespace Fun_Dub_Tool_Box
             this.DataContext = this;
         }
 
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             MaterialsGrid.ItemsSource = _materials;
             RefreshIndices();
+            LoadPresetNames();
+            UpdateQueueCount(QueueRepository.Count());
         }
+
+        private void LoadPresetNames(string? desiredSelection = null)
+        {
+            var previousSelection = _selectedPresetName;
+            _isReloadingPresets = true;
+
+            try
+            {
+                var names = PresetRepository.GetPresetNames();
+                PresetNames.Clear();
+                foreach (var name in names)
+                {
+                    PresetNames.Add(name);
+                }
+
+                string? selection = desiredSelection ?? previousSelection;
+                if (!string.IsNullOrWhiteSpace(selection) && PresetNames.Contains(selection))
+                {
+                    _selectedPresetName = selection;
+                }
+                else
+                {
+                    _selectedPresetName = PresetNames.FirstOrDefault();
+                }
+            }
+            finally
+            {
+                _isReloadingPresets = false;
+            }
+
+            OnPropertyChanged(nameof(SelectedPresetName));
+        }
+
         private void RefreshIndices()
         {
             for (int i = 0; i < _materials.Count; i++) _materials[i].Index = i + 1;
@@ -72,6 +133,10 @@ namespace Fun_Dub_Tool_Box
         }
 
         private static string FormatDuration(TimeSpan ts) => ts == TimeSpan.Zero ? "" : ts.ToString(ts.TotalHours >= 1 ? @"hh\:mm\:ss\.fff" : @"mm\:ss\.fff");
+        public void UpdateQueueCount(int count)
+        {
+            ItemsInQueueLabel.Content = $"Items in queue: {count}";
+        }
 
         private static async Task<MaterialItem> CreateItemAsync(MaterialType type, string path)
         {
@@ -145,9 +210,12 @@ namespace Fun_Dub_Tool_Box
 
         private void PresetConfigureButton_Click(object sender, RoutedEventArgs e)
         {
+            var previousSelection = SelectedPresetName;
             var editPresetWindow = new EditPresetWindow { Owner = this }; // Create a new instance and set the owner to the current window
             editPresetWindow.ShowDialog(); // Show window as a dialog
+            LoadPresetNames(previousSelection);
         }
+
 
         private void LogoSetManualToggleButton_Checked(object sender, RoutedEventArgs e)
         {
@@ -288,6 +356,52 @@ namespace Fun_Dub_Tool_Box
             AddMaterial(MaterialType.Outro);
         }
 
+        public bool TryBuildRenderJobTemplate(out RenderJob job, out string error)
+        {
+            job = new RenderJob();
+            error = string.Empty;
+
+            var mainVideo = _materials.FirstOrDefault(m => m.Type == MaterialType.Video);
+            if (mainVideo == null)
+            {
+                error = "Please add a main VIDEO before adding to the queue.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(SelectedPresetName))
+            {
+                error = "Select a render preset before adding to the queue.";
+                return false;
+            }
+
+            if (!PresetRepository.TryLoadPreset(SelectedPresetName, out var preset))
+            {
+                error = $"Preset '{SelectedPresetName}' could not be loaded.";
+                return false;
+            }
+
+            job.PresetName = SelectedPresetName;
+            job.MainVideoPath = mainVideo.Path;
+            job.Title = Path.GetFileNameWithoutExtension(mainVideo.Path);
+            job.ContainerExt = "." + preset.General.Container.ToString();
+            job.OutputFolder = Path.GetDirectoryName(mainVideo.Path) ?? Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
+            job.Materials = _materials.Select(CloneMaterial).ToList();
+            job.Status = ProcessingStatus.Pending;
+
+            return true;
+        }
+
+        private static MaterialItem CloneMaterial(MaterialItem item) => new()
+        {
+            Index = item.Index,
+            Type = item.Type,
+            Path = item.Path,
+            Duration = item.Duration,
+            Resolution = item.Resolution,
+            Extra = item.Extra
+        };
+
+
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             var intro = _materials.FirstOrDefault(m => m.Type == MaterialType.Intro)?.Path;
@@ -341,6 +455,14 @@ namespace Fun_Dub_Tool_Box
         {
             var outro = _materials.FirstOrDefault(m => m.Type == MaterialType.Outro);
             if (outro != null) _materials.Remove(outro);
+        }
+
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
