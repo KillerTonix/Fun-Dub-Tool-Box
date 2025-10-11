@@ -179,7 +179,7 @@
                                 <DataGridTemplateColumn Header="Delete" Width="70">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="✖" Width="38" Click="DeleteRow_Click"/>
+                                            <Button Content="✖" Width="38" Click="DeleteRow_Click" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

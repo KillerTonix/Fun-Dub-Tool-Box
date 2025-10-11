@@ -88,7 +88,7 @@ namespace Fun_Dub_Tool_Box
                     bitmap.CacheOption = BitmapCacheOption.OnLoad; // Load the image immediately
                     bitmap.EndInit();
 
-                    item.Resolution = $"{bitmap.Width}x{bitmap.Height}";
+                    item.Resolution = $"{bitmap.PixelWidth}x{bitmap.PixelHeight}";
                     item.Duration = "";
                     item.Extra = "Image";
                     return item;

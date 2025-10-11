@@ -43,12 +43,12 @@
                             </Button>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,10,0">
-                            <Button x:Name="StartProcessingButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10">
+                            <Button x:Name="StartProcessingButton"  Background="#FF107C10" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="80" Margin="10,10,30,10">
                                 <Grid Width="Auto">
-                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE768;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE768;" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
                             </Button>
-                            <Button x:Name="ClearQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="50" Margin="10">
+                            <Button x:Name="ClearQueueButton" Background="#FF7D1515" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="30" Margin="10" Padding="5,5,5,5">
                                 <Grid Width="Auto">
                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE74D;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 </Grid>
@@ -56,19 +56,25 @@
                         </StackPanel>
                     </Grid>
 
+                    <!-- In your Queue window DataGrid -->
+                    <DataGrid x:Name="QueueGrid" Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" AutoGenerateColumns="False" Background="#FF333333" FontFamily="PTSansRegular"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" CanUserAddRows="False" IsReadOnly="False"  CellEditEnding="QueueGrid_CellEditEnding">
+                        <DataGridTextColumn Header="#" Binding="{Binding SequenceID}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Preset" Binding="{Binding SequenceFileName}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Output File" Binding="{Binding OutputPath, UpdateSourceTrigger=PropertyChanged}" Width="*" IsReadOnly="False" />
+                        <DataGridTextColumn Header="Status" Binding="{Binding OutputPath}" Width="*" IsReadOnly="True" />
+                    </DataGrid>
+
 
                     <ListView Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" x:Name="SequentialProcessingListView" Background="#FF333333" FontFamily="PTSansRegular" ItemsSource="{Binding SequenceData}"  d:ItemsSource="{d:SampleData ItemCount=5}"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Foreground="White" >
                         <ListView.View>
                             <GridView>
                                 <GridViewColumn x:Name="NumberHeader" Header="#" DisplayMemberBinding="{Binding SequenceID}"/>
-                                <GridViewColumn x:Name="FormatHeader" Header="Format" DisplayMemberBinding="{Binding SequenceFileName}"/>
                                 <GridViewColumn x:Name="PresetHeader" Header="Preset" DisplayMemberBinding="{Binding SequenceFileName}"/>
                                 <GridViewColumn x:Name="OutputFileHeader" Header="Output File" DisplayMemberBinding="{Binding SequenceFilePath}"/>
                                 <GridViewColumn x:Name="StatusHeader" Header="Status" DisplayMemberBinding="{Binding SequenceFilePath}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
-
 
                     <Grid Grid.Row="2" Background="#FF333333">
                         <Border BorderBrush="#FFD0D0D0" BorderThickness="0,0,0,2"></Border>
@@ -88,7 +94,7 @@
                                 <Label Content="Current Rendering File:" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="10,0,0,0"/>
                                 <Label Content="example_video.mp4" x:Name="CurrentRenderingFileLabel" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" Margin="10,0,0,0"/>
                             </StackPanel>
-                            
+
                             <StackPanel Orientation="Vertical" Margin="10,0,10,0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                 <ProgressBar x:Name="OverallProgressBar" Height="10" Margin="10,10,10,0" VerticalAlignment="Stretch" Minimum="0" Maximum="100" Value="0"/>
                                 <Grid>
@@ -106,7 +112,7 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
-                            
+
                             <StackPanel>
                                 <Expander Header="Advanced Rendering Statistics" Foreground="White" Margin="10,10,10,0">
                                     <Grid>
