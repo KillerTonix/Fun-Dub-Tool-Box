@@ -1,4 +1,5 @@
-﻿using Fun_Dub_Tool_Box.Utilities;
+using FFMpegCore;
+using Fun_Dub_Tool_Box.Utilities;
 using Fun_Dub_Tool_Box.Utilities.Collections;
 using Microsoft.Win32;
 using System;
@@ -7,9 +8,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,6 +27,7 @@ namespace Fun_Dub_Tool_Box
     /// </summary>
     public partial class ProcessingQueueWindow : Window
     {
+        private readonly FfmpegRenderService _renderService = new();
         private readonly Stopwatch _stopwatch = new();
         private CancellationTokenSource? _processingCts;
         private bool _shutdownRequested;
@@ -233,32 +238,65 @@ namespace Fun_Dub_Tool_Box
             foreach (var item in SequenceData)
             {
                 token.ThrowIfCancellationRequested();
+
+                if (!EnsurePresetAvailable(item, out var preset))
+                {
+                    item.Status = ProcessingStatus.Failed;
+                    completed += 1;
+                    UpdateProgress(completed, total);
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(item.OutputPath))
+                {
+                    item.Status = ProcessingStatus.Failed;
+                    MessageBox.Show($"The queue item '{item.SequenceFileName}' does not have a valid output path.", "Queue", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    completed += 1;
+                    UpdateProgress(completed, total);
+                    continue;
+                }
+
                 item.Status = ProcessingStatus.Processing;
                 CurrentRenderingFileLabel.Content = string.IsNullOrWhiteSpace(item.OutputPath)
                     ? item.SequenceFileName
                     : Path.GetFileName(item.OutputPath);
 
-                const int steps = 20;
-                for (int step = 1; step <= steps; step++)
+                TimeSpan itemDuration = TimeSpan.Zero;
+                var progress = new Progress<FFMpegProgress>(progressValue =>
                 {
-                    token.ThrowIfCancellationRequested();
-                    await Task.Delay(150, token);
+                    var fraction = CalculateProgressFraction(progressValue, itemDuration);
+                    Dispatcher.Invoke(() =>
+                    {
+                        UpdateStatistics(progressValue);
+                        UpdateProgress(completed + fraction, total);
+                    });
+                });
 
-                    double progressIndex = completed + step / (double)steps;
-                    double percent = progressIndex / total * 100d;
-                    OverallProgressBar.Value = percent;
-                    UpdateTiming(progressIndex, total);
+                try
+                {
+                    await _renderService.RenderAsync(item.Job, preset, progress, duration => itemDuration = duration, token);
+                    item.Status = ProcessingStatus.Completed;
+                    completed += 1;
+                    UpdateProgress(completed, total);
                 }
-
-                item.Status = ProcessingStatus.Completed;
-                completed += 1;
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    item.Status = ProcessingStatus.Failed;
+                    completed += 1;
+                    UpdateProgress(completed, total);
+                    MessageBox.Show($"Failed to render '{item.SequenceFileName}': {ex.Message}", "Queue", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
 
             _stopwatch.Stop();
-            UpdateTiming(total, total);
-            CurrentRenderingFileLabel.Content = "Queue complete";
+            UpdateProgress(total, total);
+            CurrentRenderingFileLabel.Content = total > 0 ? "Queue complete" : "Idle";
 
-            if (_shutdownRequested)
+            if (_shutdownRequested && SequenceData.Any(i => i.Status == ProcessingStatus.Completed))
             {
                 RequestShutdown();
             }
@@ -286,6 +324,178 @@ namespace Fun_Dub_Tool_Box
         }
 
         private static string FormatTime(TimeSpan span) => span.ToString(span.TotalHours >= 1 ? @"hh\:mm\:ss" : @"mm\:ss");
+
+        private void UpdateProgress(double progressIndex, int total)
+        {
+            if (total <= 0)
+            {
+                OverallProgressBar.Value = 0;
+                UpdateTiming(0, 0);
+                return;
+            }
+
+            double percent = Math.Clamp(progressIndex / total * 100d, 0d, 100d);
+            OverallProgressBar.Value = percent;
+            UpdateTiming(progressIndex, total);
+        }
+
+        private bool EnsurePresetAvailable(ProcessingQueueItem item, out Preset preset)
+        {
+            if (PresetRepository.TryLoadPreset(item.PresetName, out preset))
+            {
+                return true;
+            }
+
+            MessageBox.Show($"Preset '{item.PresetName}' could not be loaded. Remove the item or choose a different preset.", "Queue", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return false;
+        }
+
+        private static double CalculateProgressFraction(FFMpegProgress progress, TimeSpan totalDuration)
+        {
+            if (TryGetProgressValue(progress, "Percent", out double percent))
+            {
+                if (percent > 1)
+                {
+                    percent /= 100d;
+                }
+
+                return Math.Clamp(percent, 0d, 1d);
+            }
+
+            if (TryGetProgressValue(progress, "Progress", out double fractionalProgress))
+            {
+                if (fractionalProgress > 1)
+                {
+                    fractionalProgress /= 100d;
+                }
+
+                return Math.Clamp(fractionalProgress, 0d, 1d);
+            }
+
+            if (totalDuration > TimeSpan.Zero)
+            {
+                if (TryGetProgressValue(progress, "OutTime", out TimeSpan outTime))
+                {
+                    return Math.Clamp(outTime.TotalSeconds / totalDuration.TotalSeconds, 0d, 1d);
+                }
+
+                if (TryGetProgressValue(progress, "CurrentTime", out TimeSpan currentTime))
+                {
+                    return Math.Clamp(currentTime.TotalSeconds / totalDuration.TotalSeconds, 0d, 1d);
+                }
+            }
+
+            return 0d;
+        }
+
+        private void UpdateStatistics(FFMpegProgress progress)
+        {
+            if (CurrentFrameLabel == null)
+            {
+                return;
+            }
+
+            if (TryGetProgressValue(progress, "Frame", out long frame))
+            {
+                CurrentFrameLabel.Content = $"Current Frame: {frame}";
+            }
+
+            if (TryGetProgressValue(progress, "Fps", out double fps))
+            {
+                FPSLabel.Content = "FPS: " + fps.ToString("0.##", CultureInfo.InvariantCulture);
+            }
+            else if (TryGetProgressValue(progress, "Speed", out double speed))
+            {
+                FPSLabel.Content = "Speed: " + speed.ToString("0.##", CultureInfo.InvariantCulture) + "x";
+            }
+
+            if (TryGetProgressValue(progress, "Bitrate", out double bitrateDouble))
+            {
+                BitrateLabel.Content = "Bitrate: " + Math.Max(0, bitrateDouble).ToString("0.##", CultureInfo.InvariantCulture) + " kbps";
+            }
+            else if (TryGetProgressValue(progress, "Bitrate", out long bitrateLong))
+            {
+                BitrateLabel.Content = "Bitrate: " + Math.Max(0, bitrateLong).ToString(CultureInfo.InvariantCulture) + " kbps";
+            }
+        }
+
+        private static bool TryGetProgressValue<T>(FFMpegProgress progress, string propertyName, out T value)
+        {
+            var property = typeof(FFMpegProgress).GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
+            if (property != null)
+            {
+                var raw = property.GetValue(progress);
+                if (raw is T typed)
+                {
+                    value = typed;
+                    return true;
+                }
+
+                if (raw is null)
+                {
+                    value = default!;
+                    return false;
+                }
+
+                if (raw is string stringValue)
+                {
+                    if (typeof(T) == typeof(double) && double.TryParse(stringValue, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedDouble))
+                    {
+                        value = (T)(object)parsedDouble;
+                        return true;
+                    }
+
+                    if (typeof(T) == typeof(long) && long.TryParse(stringValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedLong))
+                    {
+                        value = (T)(object)parsedLong;
+                        return true;
+                    }
+
+                    if (typeof(T) == typeof(TimeSpan) && TimeSpan.TryParse(stringValue, CultureInfo.InvariantCulture, out var parsedTimeSpan))
+                    {
+                        value = (T)(object)parsedTimeSpan;
+                        return true;
+                    }
+                }
+
+                if (typeof(T) == typeof(TimeSpan) && raw is TimeSpan timeSpan)
+                {
+                    value = (T)(object)timeSpan;
+                    return true;
+                }
+
+                if (typeof(T) == typeof(TimeSpan) && raw is TimeSpan? nullable && nullable.HasValue)
+                {
+                    value = (T)(object)nullable.Value;
+                    return true;
+                }
+
+                if (typeof(T) == typeof(double) && raw is double doubleValue)
+                {
+                    value = (T)(object)doubleValue;
+                    return true;
+                }
+
+                if (typeof(T) == typeof(double) && raw is double? nullableDouble && nullableDouble.HasValue)
+                {
+                    value = (T)(object)nullableDouble.Value;
+                    return true;
+                }
+
+                try
+                {
+                    value = (T)Convert.ChangeType(raw, typeof(T), CultureInfo.InvariantCulture);
+                    return true;
+                }
+                catch
+                {
+                    // Ignore conversion errors and fall through to the default return.
+                }
+            }
+
+            value = default!;
+            return false;
+        }
 
         private void AddToQueueButton_Click(object sender, RoutedEventArgs e)
         {
@@ -544,7 +754,8 @@ namespace Fun_Dub_Tool_Box
         Pending,
         Processing,
         Completed,
-        Cancelled
+        Cancelled,
+        Failed
     }
 
     public sealed class ProcessingQueueItem : INotifyPropertyChanged
