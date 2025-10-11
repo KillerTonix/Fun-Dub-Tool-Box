@@ -13,6 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Media3D;
 
 
 namespace Fun_Dub_Tool_Box
@@ -375,13 +376,11 @@ namespace Fun_Dub_Tool_Box
 
         private List<ProcessingQueueItem> GetSelectedQueueItems()
         {
-            var selected = new HashSet<ProcessingQueueItem>();
+            var selected = new HashSet<ProcessingQueueItem>();           
 
-            
-
-            if (SequentialProcessingListView?.SelectedItems != null)
+            if (QueueGrid?.SelectedItems != null)
             {
-                foreach (ProcessingQueueItem item in SequentialProcessingListView.SelectedItems)
+                foreach (ProcessingQueueItem item in QueueGrid.SelectedItems)
                 {
                     selected.Add(item);
                 }
@@ -520,6 +519,24 @@ namespace Fun_Dub_Tool_Box
                 MessageBox.Show($"Failed to schedule shutdown: {ex.Message}", "Shutdown", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+
+        private ProcessingQueueItem? SelectedItem => QueueGrid.SelectedItem as ProcessingQueueItem;
+
+
+        private void Ctx_Rename_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Ctx_Remove_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedItem == null) return;
+            // keep reference before removing from collection
+            var item = SelectedItem;
+            SequenceData.Remove(SelectedItem);
+        }
+
+      
     }
 
     public enum ProcessingStatus

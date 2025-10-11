@@ -56,27 +56,31 @@
                         </StackPanel>
                     </Grid>
 
-                    <!-- In your Queue window DataGrid -->
-                    <ListView Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" x:Name="SequentialProcessingListView" Background="#FF333333" FontFamily="PTSansRegular" ItemsSource="{Binding SequenceData}"  d:ItemsSource="{d:SampleData ItemCount=5}"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" Foreground="White" SelectionChanged="SequentialProcessingListView_SelectionChanged">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn x:Name="NumberHeader" Header="#" DisplayMemberBinding="{Binding SequenceID}"/>
-                                <GridViewColumn x:Name="NameHeader" Header="File" DisplayMemberBinding="{Binding SequenceFileName}"/>
-                                <GridViewColumn x:Name="PresetHeader" Header="Preset">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ComboBox ItemsSource="{Binding DataContext.AvailablePresets, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                      SelectedItem="{Binding PresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      Background="#FF333333" Foreground="White" Width="180"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn x:Name="OutputFileHeader" Header="Output File" DisplayMemberBinding="{Binding OutputPath}"/>
-                                <GridViewColumn x:Name="StatusHeader" Header="Status" DisplayMemberBinding="{Binding Status}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                    
+                    <DataGrid x:Name="QueueGrid" Grid.Row="1" BorderBrush="#FFD0D0D0" BorderThickness="0,2,0,0" AutoGenerateColumns="False" Background="#FF333333" FontFamily="PTSansRegular"  VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" CanUserAddRows="False" IsReadOnly="False"  CellEditEnding="QueueGrid_CellEditEnding" SelectionChanged="QueueGrid_SelectionChanged" ItemsSource="{Binding SequenceData}">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Rename" Click="Ctx_Rename_Click"/>
+                                <MenuItem Header="Remove" Click="Ctx_Remove_Click"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" Binding="{Binding SequenceID}" Width="40"/>
+                            <DataGridTextColumn Header="File" Binding="{Binding SequenceFileName}" Width="100"/>
+                            <DataGridTemplateColumn Header="Preset"  Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.AvailablePresets, RelativeSource={RelativeSource AncestorType=Window}}"
+                  SelectedItem="{Binding PresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Background="#FF333333" Foreground="White" Width="180"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Output File" Binding="{Binding OutputPath}" Width="120"/>
+                            <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="140"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
                     <Grid Grid.Row="2" Background="#FF333333">
                         <Border BorderBrush="#FFD0D0D0" BorderThickness="0,0,0,2"></Border>
                         <CheckBox x:Name="AutomaticShutdownPC" Content="Shutdown PC when the queue is finished" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Checked="AutomaticShutdownPC_Checked" Unchecked="AutomaticShutdownPC_Unchecked"/>

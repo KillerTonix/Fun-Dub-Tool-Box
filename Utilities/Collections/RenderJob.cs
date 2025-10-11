@@ -5,7 +5,6 @@ namespace Fun_Dub_Tool_Box.Utilities.Collections
     public class RenderJob
     {
         public int SequenceId { get; set; }
-
         public string Title { get; set; } = "Project";     // from main video base name
         public string OutputFolder { get; set; } = "";     // absolute path
         public string OutputPath { get; set; } = "";       // full path including extension

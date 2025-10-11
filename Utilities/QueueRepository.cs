@@ -9,11 +9,7 @@ namespace Fun_Dub_Tool_Box.Utilities
 {
     public static class QueueRepository
     {
-        private static readonly string QueueDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "FunDubToolBox",
-            "Queue");
-
+        private static readonly string QueueDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"FunDubToolBox","Queue");
         private static readonly string QueueFilePath = Path.Combine(QueueDirectory, "queue.json");
 
         public static IReadOnlyList<RenderJob> Load()
@@ -22,7 +18,7 @@ namespace Fun_Dub_Tool_Box.Utilities
             {
                 if (!File.Exists(QueueFilePath))
                 {
-                    return Array.Empty<RenderJob>();
+                    return [];
                 }
 
                 var json = File.ReadAllText(QueueFilePath);
@@ -31,7 +27,7 @@ namespace Fun_Dub_Tool_Box.Utilities
             }
             catch
             {
-                return Array.Empty<RenderJob>();
+                return [];
             }
         }
 
@@ -39,7 +35,9 @@ namespace Fun_Dub_Tool_Box.Utilities
         {
             Directory.CreateDirectory(QueueDirectory);
             var payload = jobs.ToList();
-            var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
+            JsonSerializerOptions jsonSerializerOptions = new() { WriteIndented = true };
+            JsonSerializerOptions options = jsonSerializerOptions;
+            string json = JsonSerializer.Serialize(payload, options);
             File.WriteAllText(QueueFilePath, json);
         }
 

@@ -21,7 +21,7 @@ namespace Fun_Dub_Tool_Box
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private readonly ObservableCollection<MaterialItem> _materials = [];
-        public ObservableCollection<string> PresetNames { get; } = new();
+        public ObservableCollection<string> PresetNames { get; } = [];
         private string? _selectedPresetName;
         private bool _isReloadingPresets;
         private readonly LogoSettings _logoSettings = new();
@@ -179,7 +179,7 @@ namespace Fun_Dub_Tool_Box
             LogoTransparencyTextBox.Text = percent.ToString("0", CultureInfo.InvariantCulture) + "%";
         }
 
-        
+
         private void UpdateLogoControlsAvailability()
         {
             bool hasLogo = _materials.Any(m => m.Type == MaterialType.Logo);
@@ -261,7 +261,7 @@ namespace Fun_Dub_Tool_Box
             }
 
             var text = (LogoTransparencyTextBox.Text ?? string.Empty).Trim();
-            if (text.EndsWith("%", StringComparison.Ordinal))
+            if (text.EndsWith('%'))
             {
                 text = text[..^1];
             }
@@ -532,7 +532,7 @@ namespace Fun_Dub_Tool_Box
             job.Title = Path.GetFileNameWithoutExtension(mainVideo.Path);
             job.ContainerExt = "." + preset.General.Container.ToString();
             job.OutputFolder = Path.GetDirectoryName(mainVideo.Path) ?? Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
-            job.Materials = _materials.Select(CloneMaterial).ToList();
+            job.Materials = [.. _materials.Select(CloneMaterial)];
             job.Status = ProcessingStatus.Pending;
             job.Logo = _logoSettings.Clone();
 
@@ -586,7 +586,7 @@ namespace Fun_Dub_Tool_Box
             MessageBox.Show("Render job added to the queue.", "Queue", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private bool TryPromptForOutputFile(RenderJob job, out bool cancelled, out string? errorMessage)
+        private static bool TryPromptForOutputFile(RenderJob job, out bool cancelled, out string? errorMessage)
         {
             cancelled = false;
             errorMessage = null;
@@ -631,7 +631,7 @@ namespace Fun_Dub_Tool_Box
             return true;
         }
 
-        private bool TryPersistJobToRepository(RenderJob job, out string? errorMessage)
+        private static bool TryPersistJobToRepository(RenderJob job, out string? errorMessage)
         {
             errorMessage = null;
 
@@ -649,7 +649,7 @@ namespace Fun_Dub_Tool_Box
             return true;
         }
 
-        private ProcessingQueueWindow? GetProcessingQueueWindow()
+        private static ProcessingQueueWindow? GetProcessingQueueWindow()
         {
             return Application.Current.Windows.OfType<ProcessingQueueWindow>().FirstOrDefault();
         }
@@ -669,7 +669,8 @@ namespace Fun_Dub_Tool_Box
                 MessageBox.Show("Please add a main VIDEO.", "Missing media");
                 return;
             }
-            // enqueue your render job with these paths…
+            var processingQueueWindow = new ProcessingQueueWindow { Owner = this }; // Create a new instance and set the owner to the current window
+            processingQueueWindow.ShowDialog(); // Show window as a dialog
 
         }
 
@@ -715,6 +716,23 @@ namespace Fun_Dub_Tool_Box
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            string QueueDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FunDubToolBox", "Queue");
+            string QueueFilePath = Path.Combine(QueueDirectory, "queue.json");
+            if (File.Exists(QueueFilePath))
+            {
+                try
+                {
+                    File.Delete(QueueFilePath);
+                }
+                catch
+                {
+                    // Ignore any errors during deletion
+                }
+            }
         }
     }
 }

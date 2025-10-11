@@ -15,8 +15,8 @@ namespace Fun_Dub_Tool_Box
     {
         private const double ScrollMargin = 10;
         private const double ScrollSpeed = 1;
-        private const double VideoWidth = 1280;
-        private const double VideoHeight = 720;
+        private const double VideoWidth = 1280; //get tis value from main video width usig ffmpeg
+        private const double VideoHeight = 720; //get tis value from main video height using ffmpeg
 
         private readonly LogoSettings _settings;
         private readonly string? _logoPath;
@@ -308,8 +308,16 @@ namespace Fun_Dub_Tool_Box
             if (double.IsNaN(left)) left = 0;
             if (double.IsNaN(top)) top = 0;
 
-            left = Math.Clamp(left, -100, VideoWidth - LogoImage.Width);
-            top = Math.Clamp(top, -100, VideoHeight - LogoImage.Height);
+            if (LogoImage.Width == VideoWidth && LogoImage.Height == VideoHeight)
+            {
+                left = 0;
+                top = 0;
+            }
+            else
+            {
+                left = Math.Clamp(left, -100, VideoWidth - LogoImage.Width);
+                top = Math.Clamp(top, -100, VideoHeight - LogoImage.Height);
+            }
 
             Canvas.SetLeft(LogoImage, left);
             Canvas.SetTop(LogoImage, top);

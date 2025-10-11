@@ -11,7 +11,7 @@
         Title="Fun Dub Tool Box" 
         Height="720" MinHeight="720" 
         Width="1200" MinWidth="1200"
-        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
 
     <Grid x:Name="MainGrid" Background="#FF1F1F1F">
         <Grid.ColumnDefinitions>
@@ -196,6 +196,7 @@
                             </Border>
 
                             <Grid Margin="0,30,0,0" Background="#FF333333">
+
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>
@@ -324,7 +325,7 @@
                             </Grid>
                         </Grid>
                     </Grid>
-
+                    <Border  BorderBrush="#FF878787" BorderThickness="0,0,0,2"/>
                 </Grid>
 
                 <Grid Grid.Row="2">
