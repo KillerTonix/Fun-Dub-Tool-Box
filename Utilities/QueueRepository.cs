@@ -22,16 +22,16 @@ namespace Fun_Dub_Tool_Box.Utilities
             {
                 if (!File.Exists(QueueFilePath))
                 {
-                    return [];
+                    return Array.Empty<RenderJob>();
                 }
 
                 var json = File.ReadAllText(QueueFilePath);
                 var data = JsonSerializer.Deserialize<List<RenderJob>>(json);
-                return data;
+                return data ?? [];
             }
             catch
             {
-                return [];
+                return Array.Empty<RenderJob>();
             }
         }
 

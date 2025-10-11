@@ -26,9 +26,9 @@
                         Canvas.Top="{Binding YPosition}"
                         MouseDown="Feast_MouseDown"
                         MouseUp="Feast_MouseUp"
-                        Source="/Materials/Images/Logo3.png"
-                        MouseMove="Feast_MouseMove"                
-                        Initialized="LogoImage_Initialized" Width="100">
+                        Source="/Materials/Images/Logo3.png"                      
+                        MouseMove="Feast_MouseMove"
+                        Width="100">
                     </Image>
                 </Canvas>
             </Grid>
@@ -49,9 +49,9 @@
 
                 <Grid x:Name="SizeSliderGrid" Grid.Column="0">
                     <Label Content="Size" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="18"/>
-                    <Slider x:Name="SizeSlider" Margin="25,45,25,0" Value="50" TickPlacement="TopLeft" ValueChanged="SizeSlider_ValueChanged" Maximum="50"/>
-                    <Label Content="1%" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Margin="20,15,0,0"/>
-                    <Label Content="100%" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="18" Margin="0,15,10,0" HorizontalContentAlignment="Right"/>
+                    <Slider x:Name="SizeSlider" Margin="25,45,25,0" Minimum="10" Maximum="200" Value="100" TickPlacement="TopLeft" ValueChanged="SizeSlider_ValueChanged"/>
+                    <Label Content="10%" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Margin="20,15,0,0"/>
+                    <Label Content="200%" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="18" Margin="0,15,10,0" HorizontalContentAlignment="Right"/>
                 </Grid>
                 <Grid Grid.Column="1">
                     <Button x:Name="ResetButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Center" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalAlignment="Center" Click="ResetButton_Click">
@@ -62,9 +62,10 @@
                 </Grid>
                 <Grid x:Name="TransparencySliderGrid" Grid.Column="2">
                     <Label Content="Transparency" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <Slider x:Name="TransparencySlider" Margin="25,45,25,0" Value="10" TickPlacement="TopLeft" ValueChanged="TransparencySlider_ValueChanged"/>
-                    <Label Content="1%" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Margin="20,15,0,0"/>
+                    <Slider x:Name="TransparencySlider" Margin="25,45,25,0" Minimum="0" Maximum="100" Value="100" TickPlacement="TopLeft" ValueChanged="TransparencySlider_ValueChanged"/>
+                    <Label Content="0%" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Margin="20,15,0,0"/>
                     <Label Content="100%" Foreground="White" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="18" Margin="0,15,10,0" HorizontalContentAlignment="Right"/>
+
                 </Grid>
             </Grid>
         </Grid>

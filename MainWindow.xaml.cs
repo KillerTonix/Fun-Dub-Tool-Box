@@ -5,9 +5,11 @@ using ModernWpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
@@ -22,6 +24,9 @@ namespace Fun_Dub_Tool_Box
         public ObservableCollection<string> PresetNames { get; } = new();
         private string? _selectedPresetName;
         private bool _isReloadingPresets;
+        private readonly LogoSettings _logoSettings = new();
+        private bool _updatingLogoControls;
+
 
         public string? SelectedPresetName
         {
@@ -51,13 +56,19 @@ namespace Fun_Dub_Tool_Box
             this.DataContext = this;
         }
 
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             MaterialsGrid.ItemsSource = _materials;
             RefreshIndices();
             LoadPresetNames();
             UpdateQueueCount(QueueRepository.Count());
+            ApplyLogoSettingsToUi();
+        }
+        private void RefreshIndices()
+        {
+            for (int i = 0; i < _materials.Count; i++) _materials[i].Index = i + 1;
+            MaterialsGrid.Items.Refresh();
+            UpdateLogoControlsAvailability();
         }
 
         private void LoadPresetNames(string? desiredSelection = null)
@@ -92,11 +103,6 @@ namespace Fun_Dub_Tool_Box
             OnPropertyChanged(nameof(SelectedPresetName));
         }
 
-        private void RefreshIndices()
-        {
-            for (int i = 0; i < _materials.Count; i++) _materials[i].Index = i + 1;
-            MaterialsGrid.Items.Refresh();
-        }
 
         private async void AddMaterial(MaterialType type)
         {
@@ -136,6 +142,137 @@ namespace Fun_Dub_Tool_Box
         public void UpdateQueueCount(int count)
         {
             ItemsInQueueLabel.Content = $"Items in queue: {count}";
+        }
+
+        private void ApplyLogoSettingsToUi()
+        {
+            if (LeftTopBtn == null)
+            {
+                return;
+            }
+
+            _updatingLogoControls = true;
+            try
+            {
+                bool manual = _logoSettings.UseManualPlacement;
+                LeftTopBtn.IsChecked = !manual && _logoSettings.Anchor == LogoAnchor.TopLeft;
+                RightTopBtn.IsChecked = !manual && _logoSettings.Anchor == LogoAnchor.TopRight;
+                LeftBottomBtn.IsChecked = !manual && _logoSettings.Anchor == LogoAnchor.BottomLeft;
+                RightBottomBtn.IsChecked = !manual && _logoSettings.Anchor == LogoAnchor.BottomRight;
+            }
+            finally
+            {
+                _updatingLogoControls = false;
+            }
+
+            UpdateLogoTransparencyText();
+        }
+
+        private void UpdateLogoTransparencyText()
+        {
+            if (LogoTransparencyTextBox == null)
+            {
+                return;
+            }
+
+            var percent = Math.Clamp(Math.Round(_logoSettings.Opacity * 100), 0, 100);
+            LogoTransparencyTextBox.Text = percent.ToString("0", CultureInfo.InvariantCulture) + "%";
+        }
+
+        
+        private void UpdateLogoControlsAvailability()
+        {
+            bool hasLogo = _materials.Any(m => m.Type == MaterialType.Logo);
+
+            foreach (var button in GetLogoAnchorButtons())
+            {
+                button.IsEnabled = hasLogo;
+            }
+
+            if (LogoTransparencyTextBox != null)
+            {
+                LogoTransparencyTextBox.IsEnabled = hasLogo;
+            }
+
+            if (LogoSetManualToggleButton != null)
+            {
+                if (!hasLogo)
+                {
+                    LogoSetManualToggleButton.IsChecked = false;
+                }
+                LogoSetManualToggleButton.IsEnabled = hasLogo;
+            }
+        }
+
+        private IEnumerable<ToggleButton> GetLogoAnchorButtons()
+        {
+            yield return LeftTopBtn;
+            yield return RightTopBtn;
+            yield return LeftBottomBtn;
+            yield return RightBottomBtn;
+        }
+
+        private void LogoAnchorButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (_updatingLogoControls)
+            {
+                return;
+            }
+
+            if (sender is ToggleButton button && button.Tag is string tag && Enum.TryParse(tag, out LogoAnchor anchor))
+            {
+                _logoSettings.ApplyAnchor(anchor);
+                ApplyLogoSettingsToUi();
+            }
+        }
+
+        private void LogoAnchorButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (_updatingLogoControls || _logoSettings.UseManualPlacement)
+            {
+                return;
+            }
+
+            if (sender is ToggleButton button)
+            {
+                button.IsChecked = true;
+            }
+        }
+
+        private void LogoTransparencyTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ApplyTransparencyFromText();
+        }
+
+        private void LogoTransparencyTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ApplyTransparencyFromText();
+                e.Handled = true;
+            }
+        }
+
+        private void ApplyTransparencyFromText()
+        {
+            if (LogoTransparencyTextBox == null)
+            {
+                return;
+            }
+
+            var text = (LogoTransparencyTextBox.Text ?? string.Empty).Trim();
+            if (text.EndsWith("%", StringComparison.Ordinal))
+            {
+                text = text[..^1];
+            }
+
+            if (double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+            {
+                value = Math.Clamp(value, 0, 100);
+                _logoSettings.Opacity = value / 100.0;
+            }
+
+            UpdateLogoTransparencyText();
         }
 
         private static async Task<MaterialItem> CreateItemAsync(MaterialType type, string path)
@@ -219,8 +356,18 @@ namespace Fun_Dub_Tool_Box
 
         private void LogoSetManualToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            var positioningLogoWindow = new PositioningLogoWindow { Owner = this }; // Create a new instance and set the owner to the current window
-            positioningLogoWindow.ShowDialog(); // Show window as a dialog
+            var logo = _materials.FirstOrDefault(m => m.Type == MaterialType.Logo);
+            if (logo == null)
+            {
+                MessageBox.Show("Add a logo before configuring manual placement.", "Logo", MessageBoxButton.OK, MessageBoxImage.Information);
+                LogoSetManualToggleButton.IsChecked = false;
+                return;
+            }
+
+            var positioningLogoWindow = new PositioningLogoWindow(_logoSettings, logo.Path) { Owner = this };
+            positioningLogoWindow.ShowDialog();
+            LogoSetManualToggleButton.IsChecked = true;
+            ApplyLogoSettingsToUi();
         }
 
         private void SeeQueueListButton_Click(object sender, RoutedEventArgs e)
@@ -387,6 +534,7 @@ namespace Fun_Dub_Tool_Box
             job.OutputFolder = Path.GetDirectoryName(mainVideo.Path) ?? Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
             job.Materials = _materials.Select(CloneMaterial).ToList();
             job.Status = ProcessingStatus.Pending;
+            job.Logo = _logoSettings.Clone();
 
             return true;
         }
@@ -401,6 +549,110 @@ namespace Fun_Dub_Tool_Box
             Extra = item.Extra
         };
 
+        private void AddToQueueButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!TryBuildRenderJobTemplate(out var job, out var error))
+            {
+                MessageBox.Show(error, "Queue", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!TryPromptForOutputFile(job, out bool cancelled, out var promptError))
+            {
+                if (!cancelled && !string.IsNullOrWhiteSpace(promptError))
+                {
+                    MessageBox.Show(promptError, "Queue", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+
+                return;
+            }
+
+            var queueWindow = GetProcessingQueueWindow();
+            if (queueWindow != null)
+            {
+                if (!queueWindow.TryEnqueueJob(job, out var enqueueError))
+                {
+                    MessageBox.Show(enqueueError ?? "That output file is already queued.", "Queue", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+            }
+            else if (!TryPersistJobToRepository(job, out var persistError))
+            {
+                MessageBox.Show(persistError ?? "That output file is already queued.", "Queue", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            UpdateQueueCount(QueueRepository.Count());
+            MessageBox.Show("Render job added to the queue.", "Queue", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private bool TryPromptForOutputFile(RenderJob job, out bool cancelled, out string? errorMessage)
+        {
+            cancelled = false;
+            errorMessage = null;
+
+            if (!PresetRepository.TryLoadPreset(job.PresetName, out var preset))
+            {
+                errorMessage = $"Preset '{job.PresetName}' could not be loaded.";
+                return false;
+            }
+
+            job.ContainerExt = "." + preset.General.Container.ToString();
+            job.OutputFolder = string.IsNullOrEmpty(job.OutputFolder)
+                ? (Path.GetDirectoryName(job.MainVideoPath) ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments))
+                : job.OutputFolder;
+
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Choose output file",
+                FileName = RenderJobHelper.BuildSuggestedOutputName(job, preset),
+                Filter = $"{preset.General.Container.ToString().ToUpperInvariant()}|*{job.ContainerExt}|All files|*.*",
+                InitialDirectory = Directory.Exists(job.OutputFolder)
+                    ? job.OutputFolder
+                    : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (dialog.ShowDialog() != true)
+            {
+                cancelled = true;
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(dialog.FileName))
+            {
+                errorMessage = "Choose a valid output file.";
+                return false;
+            }
+
+            job.OutputPath = dialog.FileName;
+            job.OutputFolder = Path.GetDirectoryName(dialog.FileName) ?? job.OutputFolder;
+            job.Status = ProcessingStatus.Pending;
+
+            return true;
+        }
+
+        private bool TryPersistJobToRepository(RenderJob job, out string? errorMessage)
+        {
+            errorMessage = null;
+
+            var existingJobs = QueueRepository.Load().ToList();
+            if (existingJobs.Any(j => string.Equals(j.OutputPath, job.OutputPath, StringComparison.OrdinalIgnoreCase)))
+            {
+                errorMessage = "That output file is already queued.";
+                return false;
+            }
+
+            var nextSequence = existingJobs.Count == 0 ? 1 : existingJobs.Max(j => j.SequenceId) + 1;
+            job.SequenceId = nextSequence;
+            existingJobs.Add(job);
+            QueueRepository.Save(existingJobs);
+            return true;
+        }
+
+        private ProcessingQueueWindow? GetProcessingQueueWindow()
+        {
+            return Application.Current.Windows.OfType<ProcessingQueueWindow>().FirstOrDefault();
+        }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {

@@ -188,7 +188,7 @@
                     </Grid>
                 </Grid>
 
-                <Grid Grid.Row ="1" Margin="0,10,0,10">
+                <Grid Grid.Row ="1" Margin="0,10,0,10">                    
                     <Grid Grid.Row="0">
                         <Grid>
                             <Border Background="#FF4D4D4D" VerticalAlignment="Top" Grid.Row="0" Height="32">
@@ -216,7 +216,8 @@
                                         </Grid.ColumnDefinitions>
 
                                         <ComboBox Name="PresetComboBox" Grid.Column="0" FontFamily="Nunito" FontSize="14"  Background="#FF333333" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="10,0,10,0"
-                                                  ItemsSource="{Binding PresetNames}" SelectedItem="{Binding SelectedPresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>                   <Button x:Name="PresetEditButton" Grid.Column="1" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch" Margin="10,0,10,0" Click="PresetConfigureButton_Click">
+                                                  ItemsSource="{Binding PresetNames}" SelectedItem="{Binding SelectedPresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <Button x:Name="PresetEditButton" Grid.Column="1" Background="#FF555555" Foreground="White" FontFamily="Nunito" HorizontalAlignment="Stretch" Margin="10,0,10,0" Click="PresetConfigureButton_Click">
                                             <Grid Width="Auto">
                                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xef58;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                                 <TextBlock x:Name="PresetEditTextBlock" Text="Edit Preset" FontFamily="PTSansBold" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>
@@ -224,7 +225,7 @@
                                         </Button>
                                         <Border Grid.ColumnSpan="2" BorderBrush="#FF878787" BorderThickness="0,0,0,2"/>
 
-                                    </Grid>                                    
+                                    </Grid>
                                 </Grid>
 
 
@@ -242,11 +243,11 @@
                                         <StackPanel Orientation="Vertical" Grid.Column="0" Margin="5">
                                             <Label x:Name="LogoOrientationLabel" Content="Orientation" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                                                <ToggleButton x:Name="LeftTopBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" BorderBrush="#FF1A1A1A">
+                                                <ToggleButton x:Name="LeftTopBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" BorderBrush="#FF1A1A1A" Tag="TopLeft" Checked="LogoAnchorButton_Checked" Unchecked="LogoAnchorButton_Unchecked">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe742;" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Left" Width="11" Height="11" />
                                                 </ToggleButton>
 
-                                                <ToggleButton x:Name="RightTopBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" BorderBrush="#FF1A1A1A" >
+                                                <ToggleButton x:Name="RightTopBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" BorderBrush="#FF1A1A1A" Tag="TopRight" Checked="LogoAnchorButton_Checked" Unchecked="LogoAnchorButton_Unchecked">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe742;" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Center" Height="11" RenderTransformOrigin="0.5,0.5" Width="11" >
                                                         <TextBlock.RenderTransform>
                                                             <TransformGroup>
@@ -261,7 +262,7 @@
                                                 </ToggleButton>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                                                <ToggleButton x:Name="LeftBottomBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" FontSize="10" BorderBrush="#FF1A1A1A">
+                                                <ToggleButton x:Name="LeftBottomBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" FontSize="10" BorderBrush="#FF1A1A1A" Tag="BottomLeft" Checked="LogoAnchorButton_Checked" Unchecked="LogoAnchorButton_Unchecked">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe742;" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Center" Height="11" RenderTransformOrigin="0.5,0.5" Width="11" >
                                                         <TextBlock.RenderTransform>
                                                             <TransformGroup>
@@ -273,7 +274,7 @@
                                                         </TextBlock.RenderTransform>
                                                     </TextBlock>
                                                 </ToggleButton>
-                                                <ToggleButton x:Name="RightBottomBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" FontSize="10" BorderBrush="#FF1A1A1A">
+                                                <ToggleButton x:Name="RightBottomBtn" BorderThickness="1" Background="#FF333333" Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" FontSize="10" BorderBrush="#FF1A1A1A" Tag="BottomRight" Checked="LogoAnchorButton_Checked" Unchecked="LogoAnchorButton_Unchecked">
                                                     <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe742;" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Left" Height="11" RenderTransformOrigin="0.5,0.5" Width="11" >
                                                         <TextBlock.RenderTransform>
                                                             <TransformGroup>
@@ -290,7 +291,7 @@
 
                                         <StackPanel Orientation="Vertical" Grid.Column="1" Margin="5">
                                             <Label x:Name="LogoTransparencyLabel" Content="Transparency" FontWeight="Bold" Foreground="White" FontFamily="PTSansBold" Margin="0,0,0,0" HorizontalAlignment="Center" />
-                                            <TextBox Name="LogoTransparencyTextBox" Text="100%" Margin="0,10,0,0" Background="#FF333333" Foreground="White" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                                            <TextBox Name="LogoTransparencyTextBox" Text="100%" Margin="0,10,0,0" Background="#FF333333" Foreground="White" FontFamily="Nunito" FontSize="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" KeyDown="LogoTransparencyTextBox_KeyDown" LostFocus="LogoTransparencyTextBox_LostFocus"/>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Vertical" Grid.Column="2" Margin="5,5,10,5">
@@ -323,7 +324,6 @@
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Border  BorderBrush="#FFD0D0D0" BorderThickness="0,0,0,2"/>
 
                 </Grid>
 
@@ -337,7 +337,7 @@
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="AddToQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Left" BorderBrush="{x:Null}" Margin="10,0,0,0">
+                        <Button x:Name="AddToQueueButton" Background="#FF555555" Foreground="White" FontFamily="Nunito Black" HorizontalAlignment="Left" BorderBrush="{x:Null}" Margin="10,0,0,0" Click="AddToQueueButton_Click">
                             <Grid Width="Auto">
                                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xe710;" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 <TextBlock x:Name="AddToQueueTextBlock" FontFamily="Nunito Black" Text="Add Project to Queue" FontSize="14" HorizontalAlignment="Center" Margin="20,0,0,0" TextAlignment="Center"/>

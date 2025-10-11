@@ -1,16 +1,19 @@
 ﻿using Fun_Dub_Tool_Box.Utilities;
 using Fun_Dub_Tool_Box.Utilities.Collections;
 using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+
 
 namespace Fun_Dub_Tool_Box
 {
@@ -42,7 +45,6 @@ namespace Fun_Dub_Tool_Box
             UpdateButtonsState();
             UpdateUiForIdle();
         }
-
         private void LoadStoredQueue()
         {
             foreach (var job in QueueRepository.Load())
@@ -140,7 +142,7 @@ namespace Fun_Dub_Tool_Box
 
                 if (string.IsNullOrWhiteSpace(item.OutputPath))
                 {
-                    var suggestedName = BuildSuggestedOutputName(item.Job, preset);
+                    var suggestedName = RenderJobHelper.BuildSuggestedOutputName(item.Job, preset);
                     item.OutputPath = Path.Combine(item.Job.OutputFolder, suggestedName);
                 }
                 else
@@ -152,31 +154,6 @@ namespace Fun_Dub_Tool_Box
                     }
                 }
             }
-        }
-
-        private static string BuildSuggestedOutputName(RenderJob job, Preset preset)
-        {
-            var pattern = preset.General.FileNamePattern;
-            if (string.IsNullOrWhiteSpace(pattern))
-            {
-                return job.Title + job.ContainerExt;
-            }
-
-            var title = string.IsNullOrWhiteSpace(job.Title) ? "Project" : job.Title;
-            var result = pattern.Replace("{title}", title);
-
-            // handle simple {date:format}
-            result = Regex.Replace(
-                result,
-                "\\{date:(.+?)\\}",
-                m => DateTime.Now.ToString(m.Groups[1].Value, CultureInfo.InvariantCulture));
-
-            if (!result.EndsWith(job.ContainerExt, StringComparison.OrdinalIgnoreCase))
-            {
-                result += job.ContainerExt;
-            }
-
-            return result;
         }
 
         private void RefreshSequenceIds()
@@ -338,7 +315,7 @@ namespace Fun_Dub_Tool_Box
             var dialog = new SaveFileDialog
             {
                 Title = "Choose output file",
-                FileName = BuildSuggestedOutputName(job, preset),
+                FileName = RenderJobHelper.BuildSuggestedOutputName(job, preset),
                 Filter = $"{preset.General.Container.ToString().ToUpperInvariant()}|*{job.ContainerExt}|All files|*.*",
                 InitialDirectory = Directory.Exists(job.OutputFolder) ? job.OutputFolder : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
@@ -359,6 +336,23 @@ namespace Fun_Dub_Tool_Box
             job.Status = ProcessingStatus.Pending;
             job.ShutdownWhenCompleted = _shutdownRequested;
 
+            if (!TryEnqueueJob(job, out var errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Queue", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+        }
+
+        public bool TryEnqueueJob(RenderJob job, out string? errorMessage)
+        {
+            errorMessage = null;
+
+            if (SequenceData.Any(q => string.Equals(q.OutputPath, job.OutputPath, StringComparison.OrdinalIgnoreCase)))
+            {
+                errorMessage = "That output file is already queued.";
+                return false;
+            }
+
             var item = new ProcessingQueueItem(job)
             {
                 PresetName = job.PresetName,
@@ -366,6 +360,7 @@ namespace Fun_Dub_Tool_Box
             };
 
             SequenceData.Add(item);
+            return true;
         }
 
         private MainWindow? GetHostMainWindow()
@@ -382,14 +377,16 @@ namespace Fun_Dub_Tool_Box
         {
             var selected = new HashSet<ProcessingQueueItem>();
 
-            if (QueueGrid?.SelectedItems != null)
+            
+
+            if (SequentialProcessingListView?.SelectedItems != null)
             {
-                foreach (ProcessingQueueItem item in QueueGrid.SelectedItems)
+                foreach (ProcessingQueueItem item in SequentialProcessingListView.SelectedItems)
                 {
                     selected.Add(item);
                 }
             }
-          
+
             return selected.ToList();
         }
 
@@ -409,12 +406,17 @@ namespace Fun_Dub_Tool_Box
 
         private void QueueGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // SynchronizeSelectionFromGrid(); //need to fix this
             UpdateButtonsState();
         }
-          
+
+        private void SequentialProcessingListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateButtonsState();
+        }
 
        
+
+    
 
         private void EditSelectedQueueButton_Click(object sender, RoutedEventArgs e)
         {
