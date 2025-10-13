@@ -11,7 +11,7 @@
         WindowStyle="ToolWindow"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
-        Title="ProcessingQueueWindow" Height="720" Width="720">
+        Title="ProcessingQueueWindow" Height="720" Width="720" Loaded="Window_Loaded">
     <Grid>
         <Grid Grid.Row ="1">
             <Grid Grid.Row="0">

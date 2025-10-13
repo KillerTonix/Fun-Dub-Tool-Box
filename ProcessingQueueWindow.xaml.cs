@@ -1,7 +1,6 @@
 ﻿using Fun_Dub_Tool_Box.Utilities;
 using Fun_Dub_Tool_Box.Utilities.Collections;
 using Microsoft.Win32;
-using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -27,14 +26,14 @@ namespace Fun_Dub_Tool_Box
         private bool _shutdownRequested;
         private bool _synchronizingSelection;
 
-        public ObservableCollection<ProcessingQueueItem> SequenceData { get; } = new();
-        public ObservableCollection<string> AvailablePresets { get; } = new();
+        public ObservableCollection<ProcessingQueueItem> SequenceData { get; } = [];
+        public ObservableCollection<string> AvailablePresets { get; } = [];
 
         public ProcessingQueueWindow()
         {
             InitializeComponent();
             DataContext = this;
-
+            QueueGrid.ItemsSource = SequenceData;
             SequenceData.CollectionChanged += SequenceData_CollectionChanged;
 
             _shutdownRequested = AutomaticShutdownPC.IsChecked == true;
@@ -44,6 +43,7 @@ namespace Fun_Dub_Tool_Box
 
             UpdateButtonsState();
             UpdateUiForIdle();
+            //need to load 
         }
 
         private void LoadStoredQueue()
@@ -737,7 +737,10 @@ namespace Fun_Dub_Tool_Box
             SequenceData.Remove(SelectedItem);
         }
 
-
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            QueueGrid.Items.Refresh();
+        }
     }
 
     public enum ProcessingStatus
