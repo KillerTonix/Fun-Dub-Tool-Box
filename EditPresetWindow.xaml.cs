@@ -160,6 +160,17 @@ namespace Fun_Dub_Tool_Box
             var name = string.IsNullOrWhiteSpace(PresetNameCmb.Text) ? _preset.Name : PresetNameCmb.Text;
             var path = Path.Combine(PresetsDir, $"{Sanitize(name)}.json");
             if (File.Exists(path)) File.Delete(path);
+
+            // refresh name dropdown
+            var list = (PresetNameCmb.ItemsSource as List<string>) ?? [];
+            if (!list.Contains(name))
+            {
+                return;
+            }
+            list.Remove(name);
+            PresetNameCmb.ItemsSource = null;   // clear binding first
+            PresetNameCmb.ItemsSource = list;   // re-bind updated list
+            PresetNameCmb.SelectedIndex = 0;    // select first if any
         }
 
         private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)

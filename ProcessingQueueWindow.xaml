@@ -11,7 +11,7 @@
         WindowStyle="ToolWindow"
         WindowState="Normal"
         WindowStartupLocation="CenterScreen"
-        Title="ProcessingQueueWindow" Height="720" Width="720">
+        Title="ProcessingQueueWindow" Height="600" Width="900" Loaded="Window_Loaded">
     <Grid>
         <Grid Grid.Row ="1">
             <Grid Grid.Row="0">
@@ -66,17 +66,17 @@
 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="#" Binding="{Binding SequenceID}" Width="40"/>
-                            <DataGridTextColumn Header="File" Binding="{Binding SequenceFileName}" Width="100"/>
-                            <DataGridTemplateColumn Header="Preset"  Width="*">
+                            <DataGridTextColumn Header="File" Binding="{Binding SequenceFileName}" Width="200"/>
+                            <DataGridTemplateColumn Header="Preset"  Width="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding DataContext.AvailablePresets, RelativeSource={RelativeSource AncestorType=Window}}"
                   SelectedItem="{Binding PresetName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  Background="#FF333333" Foreground="White" Width="180"/>
+                  Background="#FF333333" Foreground="White" Width="100"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Output File" Binding="{Binding OutputPath}" Width="120"/>
+                            <DataGridTextColumn Header="Output File" Binding="{Binding OutputPath}" Width="*"/>
                             <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="140"/>
                         </DataGrid.Columns>
                     </DataGrid>
@@ -86,7 +86,7 @@
                         <CheckBox x:Name="AutomaticShutdownPC" Content="Shutdown PC when the queue is finished" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Checked="AutomaticShutdownPC_Checked" Unchecked="AutomaticShutdownPC_Unchecked"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Label Content="Rendering by:" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
-                            <ComboBox x:Name="RenderingEngineComboBox" Grid.Row="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="250">
+                            <ComboBox x:Name="RenderingEngineComboBox" Grid.Row="0" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="250" SelectionChanged="RenderingEngineComboBox_SelectionChanged">
                                 <ComboBoxItem Content="GPU Acceleration using NVENC"/>
                                 <ComboBoxItem Content="CPU Acceleration"/>
                             </ComboBox>

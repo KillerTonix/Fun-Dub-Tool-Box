@@ -15,39 +15,26 @@ namespace Fun_Dub_Tool_Box.Utilities
     /// </summary>
     public sealed class FfmpegRenderService
     {
-        private sealed class MediaInput
+        private sealed class MediaInput(
+            MaterialItem? material,
+            int index,
+            bool hasAudio,
+            TimeSpan duration,
+            string path,
+            bool isLogo,
+            bool isAudioOnly,
+            int width,
+            int height)
         {
-            public MediaInput(
-                MaterialItem? material,
-                int index,
-                bool hasAudio,
-                TimeSpan duration,
-                string path,
-                bool isLogo,
-                bool isAudioOnly,
-                int width,
-                int height)
-            {
-                Material = material;
-                Index = index;
-                HasAudio = hasAudio;
-                Duration = duration;
-                Path = path;
-                IsLogo = isLogo;
-                IsAudioOnly = isAudioOnly;
-                Width = width;
-                Height = height;
-            }
-
-            public MaterialItem? Material { get; }
-            public int Index { get; }
-            public bool HasAudio { get; }
-            public TimeSpan Duration { get; }
-            public string Path { get; }
-            public bool IsLogo { get; }
-            public bool IsAudioOnly { get; }
-            public int Width { get; }
-            public int Height { get; }
+            public MaterialItem? Material { get; } = material;
+            public int Index { get; } = index;
+            public bool HasAudio { get; } = hasAudio;
+            public TimeSpan Duration { get; } = duration;
+            public string Path { get; } = path;
+            public bool IsLogo { get; } = isLogo;
+            public bool IsAudioOnly { get; } = isAudioOnly;
+            public int Width { get; } = width;
+            public int Height { get; } = height;
         }
 
         public async Task RenderAsync(
@@ -163,10 +150,16 @@ namespace Fun_Dub_Tool_Box.Utilities
 
             if (progress != null)
             {
-                pipeline = pipeline.NotifyOnProgress(progress, TimeSpan.FromMilliseconds(500));
+                pipeline = pipeline.NotifyOnProgress(percent =>
+                {
+                    progress.Report(new FFMpegProgress
+                    {
+                        Percentage = percent
+                    });
+                }, TimeSpan.FromMilliseconds(500));
             }
 
-            await pipeline.ProcessAsynchronously(true, cancellationToken).ConfigureAwait(false);
+            await pipeline.ProcessAsynchronously(true).ConfigureAwait(false);
         }
 
         private static FFMpegArguments BuildArgumentPipeline(
@@ -501,5 +494,14 @@ namespace Fun_Dub_Tool_Box.Utilities
                 _ => ("0", "0")
             };
         }
+    }
+
+    // If FFMpegProgress is not available, define a minimal version for progress reporting:
+    public class FFMpegProgress
+    {
+        public TimeSpan? Duration { get; set; }
+        public TimeSpan? CurrentTime { get; set; }
+        public double? Percentage { get; set; }
+        public string? Message { get; set; }
     }
 }
