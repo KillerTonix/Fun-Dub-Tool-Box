@@ -1,4 +1,5 @@
-﻿using Fun_Dub_Tool_Box.Utilities;
+using FFMpegCore;
+using Fun_Dub_Tool_Box.Utilities;
 using Fun_Dub_Tool_Box.Utilities.Collections;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
@@ -7,8 +8,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -303,7 +302,6 @@ namespace Fun_Dub_Tool_Box
                     UpdateProgress(completed, total);
                     MessageBox.Show($"Failed to render '{item.SequenceFileName}': {ex.Message}", "Queue", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-
             }
 
             _stopwatch.Stop();
@@ -353,7 +351,7 @@ namespace Fun_Dub_Tool_Box
             UpdateTiming(progressIndex, total);
         }
 
-        private static bool EnsurePresetAvailable(ProcessingQueueItem item, out Preset preset)
+        private bool EnsurePresetAvailable(ProcessingQueueItem item, out Preset preset)
         {
             if (PresetRepository.TryLoadPreset(item.PresetName, out preset))
             {
@@ -478,9 +476,9 @@ namespace Fun_Dub_Tool_Box
                     return true;
                 }
 
-                if (typeof(T) == typeof(TimeSpan) && raw is TimeSpan)
+                if (typeof(T) == typeof(TimeSpan) && raw is TimeSpan? nullable && nullable.HasValue)
                 {
-                    value = (T)(object)0;
+                    value = (T)(object)nullable.Value;
                     return true;
                 }
 
@@ -490,9 +488,9 @@ namespace Fun_Dub_Tool_Box
                     return true;
                 }
 
-                if (typeof(T) == typeof(double) && raw is double)
+                if (typeof(T) == typeof(double) && raw is double? nullableDouble && nullableDouble.HasValue)
                 {
-                    value = (T)(object)0;
+                    value = (T)(object)nullableDouble.Value;
                     return true;
                 }
 

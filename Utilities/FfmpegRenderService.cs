@@ -1,7 +1,12 @@
-﻿using FFMpegCore;
+using FFMpegCore;
 using Fun_Dub_Tool_Box.Utilities.Collections;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Fun_Dub_Tool_Box.Utilities
 {
