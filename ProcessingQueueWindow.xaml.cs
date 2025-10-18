@@ -24,7 +24,7 @@ namespace Fun_Dub_Tool_Box
         private readonly Stopwatch _stopwatch = new();
         private CancellationTokenSource? _processingCts;
         private bool _shutdownRequested;
-        private bool _synchronizingSelection;
+        private bool _isLoadingQueue;
 
         public ObservableCollection<ProcessingQueueItem> SequenceData { get; } = [];
         public ObservableCollection<string> AvailablePresets { get; } = [];
@@ -43,15 +43,35 @@ namespace Fun_Dub_Tool_Box
 
             UpdateButtonsState();
             UpdateUiForIdle();
-            //need to load 
         }
 
         private void LoadStoredQueue()
         {
-            foreach (var item in SequenceData.Where(i => i.Status == ProcessingStatus.Processing))
+            _isLoadingQueue = true;
+
+            try
             {
-                item.Status = ProcessingStatus.Cancelled;
+                SequenceData.Clear();
+
+                foreach (var job in QueueRepository.Load())
+                {
+                    if (job.Status == ProcessingStatus.Processing)
+                    {
+                        job.Status = ProcessingStatus.Cancelled;
+                    }
+
+                    SequenceData.Add(new ProcessingQueueItem(job));
+                }
             }
+            finally
+            {
+                _isLoadingQueue = false;
+            }
+
+            RefreshSequenceIds();
+            UpdateButtonsState();
+            UpdateQueueCountLabel();
+            PersistQueue();
         }
 
         private void ReloadPresets()
@@ -63,20 +83,23 @@ namespace Fun_Dub_Tool_Box
             }
         }
 
-        protected override void OnActivated(EventArgs e)
-        {
-            base.OnActivated(e);
-            ReloadPresets();
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            base.OnClosing(e);
-            _processingCts?.Cancel();
-        }
 
         private void SequenceData_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            if (_isLoadingQueue)
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (ProcessingQueueItem item in e.NewItems)
+                    {
+                        item.PropertyChanged -= QueueItem_PropertyChanged;
+                        item.PropertyChanged += QueueItem_PropertyChanged;
+                    }
+                }
+
+                return;
+            }
+
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 foreach (var item in SequenceData)
@@ -124,7 +147,7 @@ namespace Fun_Dub_Tool_Box
             }
         }
 
-        private void ApplyPresetToItem(ProcessingQueueItem item)
+        private static void ApplyPresetToItem(ProcessingQueueItem item)
         {
             if (string.IsNullOrWhiteSpace(item.PresetName))
             {
@@ -330,7 +353,7 @@ namespace Fun_Dub_Tool_Box
             UpdateTiming(progressIndex, total);
         }
 
-        private bool EnsurePresetAvailable(ProcessingQueueItem item, out Preset preset)
+        private static bool EnsurePresetAvailable(ProcessingQueueItem item, out Preset preset)
         {
             if (PresetRepository.TryLoadPreset(item.PresetName, out preset))
             {
@@ -587,7 +610,7 @@ namespace Fun_Dub_Tool_Box
                 }
             }
 
-            return selected.ToList();
+            return [.. selected];
         }
 
         private void RemoveFromQueueButton_Click(object sender, RoutedEventArgs e)
@@ -734,12 +757,24 @@ namespace Fun_Dub_Tool_Box
             if (SelectedItem == null) return;
             // keep reference before removing from collection
             var item = SelectedItem;
-            SequenceData.Remove(SelectedItem);
+            SequenceData.Remove(item);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             QueueGrid.Items.Refresh();
+        }
+
+        private void RenderingEngineComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SelectedItem == null) return;
+            int selectedEngine = RenderingEngineComboBox.SelectedIndex;
+            if (selectedEngine < 0 || selectedEngine > 2) selectedEngine = 0;
+            if (selectedEngine == 0)
+                SelectedItem.Job.GpuAcceleration = true;
+            else if (selectedEngine == 1)
+                SelectedItem.Job.GpuAcceleration = false;
+            PersistQueue();
         }
     }
 
@@ -759,6 +794,7 @@ namespace Fun_Dub_Tool_Box
         private string _inputPath = string.Empty;
         private string _outputPath = string.Empty;
         private string _presetName = string.Empty;
+        private bool _GpuAccelerationEnabled = true;
         private ProcessingStatus _status = ProcessingStatus.Pending;
 
         public ProcessingQueueItem(RenderJob job)
@@ -771,6 +807,7 @@ namespace Fun_Dub_Tool_Box
             _inputPath = job.MainVideoPath;
             _outputPath = job.OutputPath;
             _presetName = job.PresetName;
+            _GpuAccelerationEnabled = job.GpuAcceleration;
             _status = job.Status;
         }
 
@@ -835,6 +872,18 @@ namespace Fun_Dub_Tool_Box
                 if (SetProperty(ref _presetName, value ?? string.Empty))
                 {
                     Job.PresetName = value ?? string.Empty;
+                }
+            }
+        }
+
+        public bool GpuAccelerationEnabled
+        {
+            get => _GpuAccelerationEnabled;
+            set
+            {
+                if (SetProperty(ref _GpuAccelerationEnabled, value))
+                {
+                    Job.GpuAcceleration = value;
                 }
             }
         }

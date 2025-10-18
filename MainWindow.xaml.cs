@@ -104,7 +104,7 @@ namespace Fun_Dub_Tool_Box
         }
 
 
-        private async void AddMaterial(MaterialType type)
+        private bool AddMaterial(MaterialType type)
         {
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
@@ -116,25 +116,28 @@ namespace Fun_Dub_Tool_Box
                     MaterialType.Audio => "Audio|*.wav;*.mp3;*.aac;*.m4a;*.flac",
                     _ => "Video|*.mp4;*.mkv;*.mov;*.avi;*.m4v"
                 },
-                Multiselect = (type == MaterialType.Audio) // multiple bgm if you want
+                Multiselect = false,
             };
 
-            if (dlg.ShowDialog() != true) return;
+            if (dlg.ShowDialog() != true) return false;
 
-            // Validate one-per-type for singleton assets
-            if (type is MaterialType.Intro or MaterialType.Video or MaterialType.Outro or MaterialType.Logo or MaterialType.Subtitles)
+            if (_materials.Any(m => m.Type == type))
             {
-                if (_materials.Any(m => m.Type == type))
-                {
-                    MessageBox.Show($"{type} already added. Replace it from context menu.", "Limit", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
-                }
+                MessageBox.Show($"{type} already added. Replace it from context menu.", "Limit", MessageBoxButton.OK, MessageBoxImage.Information);
+                return false;
             }
 
             var files = dlg.FileNames;
+            CreateItemSyncToAsync(type, files);
+           
+            return true;
+        }
+
+
+        public async void CreateItemSyncToAsync(MaterialType type, string[] files)
+        {
             foreach (var f in files)
                 _materials.Add(await CreateItemAsync(type, f));
-
             RefreshIndices();
         }
 
@@ -329,7 +332,7 @@ namespace Fun_Dub_Tool_Box
 
         private void AddIntroToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            AddMaterial(MaterialType.Intro);
+            if (!AddMaterial(MaterialType.Intro)) AddIntroToggleButton.IsChecked = false;
         }
 
 
@@ -478,29 +481,28 @@ namespace Fun_Dub_Tool_Box
 
         private void AddVideoToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            AddMaterial(MaterialType.Video);
+            if (!AddMaterial(MaterialType.Video)) AddVideoToggleButton.IsChecked = false;
         }
 
-        private bool Has(MaterialType t) => _materials.Any(m => m.Type == t);
 
         private void AddLogoToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            AddMaterial(MaterialType.Logo);
+            if (!AddMaterial(MaterialType.Logo)) AddLogoToggleButton.IsChecked = false;
         }
 
         private void AddSubtitlesToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            AddMaterial(MaterialType.Subtitles);
+            if (!AddMaterial(MaterialType.Subtitles)) AddSubtitlesToggleButton.IsChecked = false;
         }
 
         private void AddAuidioToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            AddMaterial(MaterialType.Audio);
+            if (!AddMaterial(MaterialType.Audio)) AddAuidioToggleButton.IsChecked = false;
         }
 
         private void AddOutroToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-            AddMaterial(MaterialType.Outro);
+            if (!AddMaterial(MaterialType.Outro)) AddOutroToggleButton.IsChecked = false;
         }
 
         public bool TryBuildRenderJobTemplate(out RenderJob job, out string error)
@@ -570,6 +572,7 @@ namespace Fun_Dub_Tool_Box
             var queueWindow = GetProcessingQueueWindow();
             if (queueWindow != null)
             {
+                queueWindow.AvailablePresets.Add(job.PresetName);
                 if (!queueWindow.TryEnqueueJob(job, out var enqueueError))
                 {
                     MessageBox.Show(enqueueError ?? "That output file is already queued.", "Queue", MessageBoxButton.OK, MessageBoxImage.Information);

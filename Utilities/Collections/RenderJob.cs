@@ -11,9 +11,11 @@ namespace Fun_Dub_Tool_Box.Utilities.Collections
         public string ContainerExt { get; set; } = ".mp4"; // from preset container
         public string PresetName { get; set; } = string.Empty;
         public string MainVideoPath { get; set; } = string.Empty;
-        public List<MaterialItem> Materials { get; set; } = new();
+        public List<MaterialItem> Materials { get; set; } = [];
         public ProcessingStatus Status { get; set; } = ProcessingStatus.Pending;
         public bool ShutdownWhenCompleted { get; set; }
         public LogoSettings Logo { get; set; } = new();
+
+        public bool GpuAcceleration { get; set; } = true;
     }
 }
