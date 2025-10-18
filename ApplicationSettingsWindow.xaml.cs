@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Fun_Dub_Tool_Box
 {
@@ -22,6 +10,25 @@ namespace Fun_Dub_Tool_Box
         public ApplicationSettingsWindow()
         {
             InitializeComponent();
+            UpdateIdleDelayState();
+        }
+
+        private void StartQueueAutomaticallyCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            UpdateIdleDelayState();
+        }
+
+        private void StartQueueAutomaticallyCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            UpdateIdleDelayState();
+        }
+
+        private void UpdateIdleDelayState()
+        {
+            if (IdleDelayMinutesComboBox != null)
+            {
+                IdleDelayMinutesComboBox.IsEnabled = StartQueueAutomaticallyCheckBox?.IsChecked == true;
+            }
         }
     }
 }
